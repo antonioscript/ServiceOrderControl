@@ -1,7 +1,6 @@
+using OsService.Application; 
 using OsService.Infrastructure.Databases;
 using OsService.Infrastructure.Repository;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using OsService.Application.V1.Features.Customers.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +10,9 @@ builder.AddServiceDefaults();
 builder.Services.AddControllers();
 
 
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(CreateCustomerCommand).Assembly));
+//TODO: Acho que não precisa fazer isso
+builder.Services.AddApplicationServices();
+
 
 //TODO: Mover connection string para o ConnectionString Options
 builder.Services.AddSingleton<IDefaultSqlConnectionFactory>(_ =>
@@ -65,8 +65,3 @@ app.MapControllers();
 
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
