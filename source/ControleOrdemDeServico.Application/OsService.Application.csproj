@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ControleOrdemDeServico.Domain\OsService.Domain.csproj" />
-    <ProjectReference Include="..\ControleOrdemDeServico.Infrastructure\OsService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

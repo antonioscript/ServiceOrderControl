@@ -1,6 +1,10 @@
-using OsService.Application; 
-using OsService.Infrastructure.Databases;
-using OsService.Infrastructure.Repository;
+using Microsoft.EntityFrameworkCore;
+
+using OsService.Application; // AddApplicationServices
+using OsService.Application.V1.Abstractions.Persistence; // ICustomerRepository, IServiceOrderRepository, IUnitOfWork
+
+using OsService.Infrastructure.Databases;   // OsServiceDbContext
+using OsService.Infrastructure.Repository;   // CustomerRepository, ServiceOrderRepository, UnitOfWork, DatabaseGenerantor (se mantiver)
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +17,17 @@ builder.Services.AddControllers();
 //TODO: Acho que não precisa fazer isso
 builder.Services.AddApplicationServices();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("DefaultConnection string not configured");
+
+builder.Services.AddDbContext<OsServiceDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 
 //TODO: Mover connection string para o ConnectionString Options
 builder.Services.AddSingleton<IDefaultSqlConnectionFactory>(_ =>
     new SqlConnectionFactory(
-        builder.Configuration.GetConnectionString("DefaultConnection")
+        connectionString
         ?? throw new InvalidOperationException("DefaultConnection string not configured")));
 
 builder.Services.AddSingleton<IAdminSqlConnectionFactory>(_ =>

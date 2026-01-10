@@ -1,6 +1,6 @@
 ﻿using OsService.Domain.Entities;
-using OsService.Infrastructure.Repository;
 using MediatR;
+using OsService.Application.V1.Abstractions.Persistence;
 
 namespace OsService.Application.V1.Features.Customers.CreateCustomer;
 
