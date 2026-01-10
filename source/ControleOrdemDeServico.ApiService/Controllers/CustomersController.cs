@@ -1,6 +1,6 @@
-﻿using OsService.Services.V1.CreateCustomer;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using OsService.Application.V1.Features.Customers.Commands;
 
 namespace OsService.ApiService.Controllers;
 

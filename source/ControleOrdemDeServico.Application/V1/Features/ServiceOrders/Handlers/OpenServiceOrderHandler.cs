@@ -2,8 +2,9 @@
 using OsService.Domain.Enums;
 using OsService.Infrastructure.Repository;
 using MediatR;
+using OsService.Application.V1.Features.ServiceOrders.Command;
 
-namespace OsService.Services.V1.CreateCustomer;
+namespace OsService.Application.V1.Features.ServiceOrders.Handlers;
 
 public sealed class OpenServiceOrderHandler(
     ICustomerRepository customers

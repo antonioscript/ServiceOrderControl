@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ControleOrdemDeServico.ServiceDefaults\OsService.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\ControleOrdemDeServico.Services\OsService.Services.csproj" />
+    <ProjectReference Include="..\ControleOrdemDeServico.Services\OsService.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
