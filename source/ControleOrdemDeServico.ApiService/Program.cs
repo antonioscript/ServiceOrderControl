@@ -1,6 +1,7 @@
 using OsService.Infrastructure.Databases;
 using OsService.Infrastructure.Repository;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using OsService.Application.V1.Features.Customers.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,7 @@ builder.Services.AddControllers();
 
 
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(OsService.Services.V1.CreateCustomer.CreateCustomerCommand).Assembly));
+    cfg.RegisterServicesFromAssembly(typeof(CreateCustomerCommand).Assembly));
 
 //TODO: Mover connection string para o ConnectionString Options
 builder.Services.AddSingleton<IDefaultSqlConnectionFactory>(_ =>
