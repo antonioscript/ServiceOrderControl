@@ -1,60 +1,34 @@
-using Microsoft.EntityFrameworkCore;
 
-using OsService.Application; // AddApplicationServices
-using OsService.Application.V1.Abstractions.Persistence; // ICustomerRepository, IServiceOrderRepository, IUnitOfWork
+using OsService.Application; 
+using OsService.Infrastructure;                      
+using OsService.ServiceDefaults.DependencyInjection; 
 
-using OsService.Infrastructure.Databases;   // OsServiceDbContext
-using OsService.Infrastructure.Repository;   // CustomerRepository, ServiceOrderRepository, UnitOfWork, DatabaseGenerantor (se mantiver)
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
-
 builder.Services.AddControllers();
 
-
-//TODO: Acho que não precisa fazer isso
-builder.Services.AddApplicationServices();
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("DefaultConnection string not configured");
-
-builder.Services.AddDbContext<OsServiceDbContext>(options =>
-    options.UseSqlServer(connectionString));
+//Módules
+builder.Services.AddModules(builder.Configuration,
+    typeof(ApplicationModule).Assembly,
+    typeof(InfrastructureModule).Assembly);
 
 
-//TODO: Mover connection string para o ConnectionString Options
-builder.Services.AddSingleton<IDefaultSqlConnectionFactory>(_ =>
-    new SqlConnectionFactory(
-        connectionString
-        ?? throw new InvalidOperationException("DefaultConnection string not configured")));
-
-builder.Services.AddSingleton<IAdminSqlConnectionFactory>(_ =>
-    new SqlConnectionFactory(
-        builder.Configuration.GetConnectionString("CreateTable")
-        ?? throw new InvalidOperationException("CreateTable string not configured")));
-
-
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
-builder.Services.AddSingleton<DatabaseGenerantor>();
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var repository =
-        scope.ServiceProvider.GetRequiredService<DatabaseGenerantor>();
-
-    await repository.EnsureCreatedAsync(CancellationToken.None);
-
+    var generator = scope.ServiceProvider.GetRequiredService<OsService.Infrastructure.Databases.DatabaseGenerantor>();
+    await generator.EnsureCreatedAsync(CancellationToken.None);
 }
+
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();

@@ -4,7 +4,7 @@ using OsService.Application.V1.Abstractions.Persistence;
 
 namespace OsService.Application.V1.Features.Customers.CreateCustomer;
 
-public sealed class CreateCustomerHandler(ICustomerRepository repo)
+public sealed class CreateCustomerHandler(ICustomerRepository repo, IUnitOfWork unitOfWork)
     : IRequestHandler<CreateCustomerCommand, Guid>
 {
     public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken ct)
@@ -22,7 +22,9 @@ public sealed class CreateCustomerHandler(ICustomerRepository repo)
             CreatedAt = DateTime.UtcNow
         };
 
-        await repo.InsertAsync(customer, ct);
+        await repo.AddAsync(customer, ct);
+        await unitOfWork.CommitAsync(ct);
+
         return customer.Id;
     }
 }
