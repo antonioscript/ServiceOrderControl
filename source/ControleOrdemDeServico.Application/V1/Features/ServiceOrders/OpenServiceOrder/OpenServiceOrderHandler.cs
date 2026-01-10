@@ -1,13 +1,13 @@
 ﻿using OsService.Domain.Entities;
 using OsService.Domain.Enums;
-using OsService.Infrastructure.Repository;
 using MediatR;
 using OsService.Application.V1.Features.ServiceOrders.Command;
+using OsService.Application.V1.Abstractions.Persistence;
 
 namespace OsService.Application.V1.Features.ServiceOrders.OpenServiceOrder;
 
 public sealed class OpenServiceOrderHandler(
-    ICustomerRepository customers
+   ICustomerRepository customers
 ) : IRequestHandler<OpenServiceOrderCommand, (Guid Id, int Number)>
 {
     public async Task<(Guid Id, int Number)> Handle(OpenServiceOrderCommand request, CancellationToken ct)
@@ -30,7 +30,10 @@ public sealed class OpenServiceOrderHandler(
             Status = ServiceOrderStatus.Open,
             OpenedAt = DateTime.UtcNow
         };
+        //TODO
 
-        return await customers.InsertAndReturnNumberAsync(so, ct);
+        //return await customers.InsertAndReturnNumberAsync(so, ct);
+        //return await customers.InsertAndReturnNumberAsync(so, ct);
+        return (so.Id, 0);
     }
 }
