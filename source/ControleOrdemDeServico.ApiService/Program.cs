@@ -7,16 +7,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
+builder.Services.AddControllers();
+
+
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(OsService.Services.V1.CreateCustomer.CreateCustomerCommand).Assembly));
 
+//TODO: Mover connection string para o ConnectionString Options
 builder.Services.AddSingleton<IDefaultSqlConnectionFactory>(_ =>
-    new SqlConnectionFactory(builder.Configuration.GetConnectionString("ConnectionStrings__DefaultConnection")!));
+    new SqlConnectionFactory(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("DefaultConnection string not configured")));
 
 builder.Services.AddSingleton<IAdminSqlConnectionFactory>(_ =>
     new SqlConnectionFactory(
-        builder.Configuration.GetConnectionString("ConnectionStrings__CreateTable")!
-    ));
+        builder.Configuration.GetConnectionString("CreateTable")
+        ?? throw new InvalidOperationException("CreateTable string not configured")));
+
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
@@ -44,25 +51,17 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "OpenAPI V1");
+    });
 }
 
-string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
 
 app.MapDefaultEndpoints();
+app.MapControllers();
+
 
 app.Run();
 
