@@ -10,5 +10,10 @@ public sealed class ApplicationModule : IModule
     {
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(ApplicationModule).Assembly));
+
+        services.AddAutoMapper(
+            cfg => { },                 
+            typeof(ApplicationModule).Assembly
+        );
     }
 }
