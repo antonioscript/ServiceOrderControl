@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace OsService.Application.V1.Features.Customers.Commands;
+namespace OsService.Application.V1.Features.Customers.CreateCustomer;
 
 public sealed record CreateCustomerCommand(
     string Name,

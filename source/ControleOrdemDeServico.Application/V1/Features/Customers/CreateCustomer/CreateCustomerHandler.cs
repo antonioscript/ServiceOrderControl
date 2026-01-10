@@ -1,9 +1,8 @@
 ﻿using OsService.Domain.Entities;
 using OsService.Infrastructure.Repository;
 using MediatR;
-using OsService.Application.V1.Features.Customers.Commands;
 
-namespace OsService.Application.V1.Features.Customers.Handlers;
+namespace OsService.Application.V1.Features.Customers.CreateCustomer;
 
 public sealed class CreateCustomerHandler(ICustomerRepository repo)
     : IRequestHandler<CreateCustomerCommand, Guid>

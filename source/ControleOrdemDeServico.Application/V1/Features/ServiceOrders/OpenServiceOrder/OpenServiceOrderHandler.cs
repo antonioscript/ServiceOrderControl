@@ -4,7 +4,7 @@ using OsService.Infrastructure.Repository;
 using MediatR;
 using OsService.Application.V1.Features.ServiceOrders.Command;
 
-namespace OsService.Application.V1.Features.ServiceOrders.Handlers;
+namespace OsService.Application.V1.Features.ServiceOrders.OpenServiceOrder;
 
 public sealed class OpenServiceOrderHandler(
     ICustomerRepository customers
