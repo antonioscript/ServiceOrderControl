@@ -1,6 +1,6 @@
 ﻿namespace OsService.Domain.ResultPattern;
 
-//TODO: Avaliar melhor lugar para esse cara
+/
 
 public class Result
 {
