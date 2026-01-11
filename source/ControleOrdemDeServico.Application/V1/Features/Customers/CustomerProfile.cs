@@ -10,6 +10,6 @@ public sealed class CustomerProfile : Profile
     public CustomerProfile()
     {
         CreateMap<CreateCustomerCommand, CustomerEntity>();
-        CreateMap<CustomerEntity, GetCustomerByIdResponse>();
+        CreateMap<CustomerEntity, GetCustomerByContactResponse>();
     }
 }
