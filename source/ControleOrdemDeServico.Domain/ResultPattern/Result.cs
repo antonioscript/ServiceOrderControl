@@ -1,5 +1,6 @@
 ﻿namespace OsService.Domain.ResultPattern;
 
+//TODO: Avaliar necessidade de criar uma class lib de result
 public class Result
 {
     public bool IsSuccess { get; }

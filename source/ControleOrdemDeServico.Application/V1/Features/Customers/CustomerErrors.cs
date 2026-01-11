@@ -5,32 +5,32 @@ namespace OsService.Application.V1.Features.Customers;
 public static class CustomerErrors
 {
     public static readonly Error NameRequired =
-        new("Customer.NameRequired", "Name is required.");
+        Error.Validation("Customer.NameRequired", "Name is required.");
 
     public static readonly Error NameTooShort =
-        new("Customer.NameTooShort", "Name must be at least 2 characters.");
+        Error.Validation("Customer.NameTooShort", "Name must be at least 2 characters.");
 
     public static readonly Error NameTooLong =
-        new("Customer.NameTooLong", "Name must be at most 150 characters.");
+        Error.Validation("Customer.NameTooLong", "Name must be at most 150 characters.");
 
     public static readonly Error InvalidEmail =
-        new("Customer.InvalidEmail", "Email is not valid.");
+        Error.Validation("Customer.InvalidEmail", "Email is not valid.");
 
     public static readonly Error EmailTooLong =
-        new("Customer.EmailTooLong", "Email must be at most 120 characters.");
+        Error.Validation("Customer.EmailTooLong", "Email must be at most 120 characters.");
 
     public static readonly Error PhoneTooLong =
-        new("Customer.PhoneTooLong", "Phone must be at most 30 characters.");
+        Error.Validation("Customer.PhoneTooLong", "Phone must be at most 30 characters.");
 
     public static readonly Error DocumentTooLong =
-        new("Customer.DocumentTooLong", "Document must be at most 30 characters.");
-
-    public static readonly Error NotFound =
-        new("Customer.NotFound", "Customer not found.");
+        Error.Validation("Customer.DocumentTooLong", "Document must be at most 30 characters.");
 
     public static readonly Error DocumentAlreadyExists =
-        new("Customer.DocumentAlreadyExists", "A customer with this document already exists.");
+        Error.Conflict("Customer.DocumentAlreadyExists", "A customer with this document already exists.");
 
     public static readonly Error PhoneAlreadyExists =
-        new("Customer.PhoneAlreadyExists", "A customer with this phone already exists.");
+        Error.Conflict("Customer.PhoneAlreadyExists", "A customer with this phone already exists.");
+
+    public static readonly Error NotFound =
+        Error.NotFound("Customer.NotFound", "Customer not found.");
 }
