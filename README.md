@@ -1,18 +1,18 @@
-# Instruções
+# InstruÃ§Ãµes
 
-- Caso o tempo não seja suficiente, priorize a **qualidade, o padrão e a estrutura do código**, definindo claramente quais funcionalidades não serão implementadas.
-- Caso alguma funcionalidade não seja implementada, isso **deve ser documentado neste README**, explicando o motivo.
-- O código fornecido contém **problemas que devem ser identificados e corrigidos**.
-- Fique a vontade para criar, renomear e remover pastas,bibliotecas e até a solução não utilizadas.
-- O sistema deve **compilar corretamente e executar todas as ações previstas**.
-- O código final **não deve apresentar erros nem warnings** durante a compilação.
-- Deve ser enviado via e-mail para consultoria com o link do projeto no Github. A consultaoria terá até terça-feira dia 13 as as 13 horas para encaminhar o e-mail.
+- Caso o tempo nÃ£o seja suficiente, priorize a **qualidade, o padrÃ£o e a estrutura do cÃ³digo**, definindo claramente quais funcionalidades nÃ£o serÃ£o implementadas.
+- Caso alguma funcionalidade nÃ£o seja implementada, isso **deve ser documentado neste README**, explicando o motivo.
+- O cÃ³digo fornecido contÃ©m **problemas que devem ser identificados e corrigidos**.
+- Fique a vontade para criar, renomear e remover pastas,bibliotecas e atÃ© a soluÃ§Ã£o nÃ£o utilizadas.
+- O sistema deve **compilar corretamente e executar todas as aÃ§Ãµes previstas**.
+- O cÃ³digo final **nÃ£o deve apresentar erros nem warnings** durante a compilaÃ§Ã£o.
+- Deve ser enviado via e-mail para consultoria com o link do projeto no Github. A consultaoria terÃ¡ atÃ© terÃ§a-feira dia 13 as as 13 horas para encaminhar o e-mail.
 
 ---
 
-## 1. Introdução
+## 1. IntroduÃ§Ã£o
 
-Sistema para um prestador de serviços (ou pequena equipe) registrar clientes, abrir ordens de serviço, acompanhar status, registrar valores e anexar fotos de antes/depois do serviço.
+Sistema para um prestador de serviÃ§os (ou pequena equipe) registrar clientes, abrir ordens de serviÃ§o, acompanhar status, registrar valores e anexar fotos de antes/depois do serviÃ§o.
 
 ---
 
@@ -21,118 +21,118 @@ Sistema para um prestador de serviços (ou pequena equipe) registrar clientes, ab
 ### 2.1 Cadastro de Cliente
 
 #### Objetivo
-Permitir registrar e consultar dados do cliente para vinculação em Ordens de Serviço (OS).
+Permitir registrar e consultar dados do cliente para vinculaÃ§Ã£o em Ordens de ServiÃ§o (OS).
 
-#### Campos (mínimo)
-- Nome (obrigatório, 2–150 caracteres)
+#### Campos (mÃ­nimo)
+- Nome (obrigatÃ³rio, 2â€“150 caracteres)
 - Id (gerado pelo sistema)
-- Telefone (opcional, até 30 caracteres)
-- E-mail (opcional, até 120 caracteres, formato válido)
-- Documento (CPF/CNPJ) (opcional, até 30 caracteres, sem validação pesada)
-- Data de criação (gerado pelo sistema)
+- Telefone (opcional, atÃ© 30 caracteres)
+- E-mail (opcional, atÃ© 120 caracteres, formato vÃ¡lido)
+- Documento (CPF/CNPJ) (opcional, atÃ© 30 caracteres, sem validaÃ§Ã£o pesada)
+- Data de criaÃ§Ã£o (gerado pelo sistema)
 
-#### Regras de Negócio
-1. Nome é obrigatório e não pode conter apenas whitespace.
+#### Regras de NegÃ³cio
+1. Nome Ã© obrigatÃ³rio e nÃ£o pode conter apenas whitespace.
 2. Telefone e e-mail podem ser nulos; se informados, devem ser trimados.
 3. Opcionalmente, bloquear ou alertar duplicidade por:
    - Documento (CPF/CNPJ), quando informado
    - Telefone, quando informado
 
-#### Operações
+#### OperaÃ§Ãµes
 - Criar cliente
 - Consultar cliente por Id
 - Buscar cliente por telefone ou documento
 
 #### Casos de Teste
-- Criar cliente com nome válido retorna 201 Created + id
+- Criar cliente com nome vÃ¡lido retorna 201 Created + id
 - Criar cliente sem nome retorna 400 Validation Error
-- Criar cliente com e-mail inválido retorna 400 Validation Error
+- Criar cliente com e-mail invÃ¡lido retorna 400 Validation Error
 - Criar cliente com telefone e buscar retorna dados consistentes
 - Criar cliente com documento duplicado (se regra ativa) retorna 409 Conflict ou 400
 
 ---
 
-### 2.2 Abertura de Ordem de Serviço
+### 2.2 Abertura de Ordem de ServiÃ§o
 
 #### Objetivo
-Criar uma OS vinculada a um cliente, com descrição e dados iniciais.
+Criar uma OS vinculada a um cliente, com descriÃ§Ã£o e dados iniciais.
 
-#### Campos (mínimo)
-- ClienteId (obrigatório)
-- Descrição do serviço (obrigatório, 1–500 caracteres)
-- Número da OS (gerado automaticamente, sequencial/identity)
+#### Campos (mÃ­nimo)
+- ClienteId (obrigatÃ³rio)
+- DescriÃ§Ã£o do serviÃ§o (obrigatÃ³rio, 1â€“500 caracteres)
+- NÃºmero da OS (gerado automaticamente, sequencial/identity)
 - Status (inicial = Aberta)
 - Data de abertura (gerado pelo sistema)
-- Valor do serviço (decimal(18,2)) (opcional no momento da abertura)
+- Valor do serviÃ§o (decimal(18,2)) (opcional no momento da abertura)
 - Moeda (BRL)
-- Data de atualização valor (opcional)
+- Data de atualizaÃ§Ã£o valor (opcional)
 
-#### Regras de Negócio
-1. Só é possível abrir OS para cliente existente.
-2. Descrição é obrigatória.
+#### Regras de NegÃ³cio
+1. SÃ³ Ã© possÃ­vel abrir OS para cliente existente.
+2. DescriÃ§Ã£o Ã© obrigatÃ³ria.
 3. Status inicial deve ser sempre Aberta.
-4. Número da OS deve ser único e sequencial.
-5. Regra de negócio item 2.4 
+4. NÃºmero da OS deve ser Ãºnico e sequencial.
+5. Regra de negÃ³cio item 2.4 
 
-#### Operações
+#### OperaÃ§Ãµes
 - Abrir OS
 - Consultar OS por Id
-- Listar OS por cliente, status ou período
+- Listar OS por cliente, status ou perÃ­odo
 
 #### Casos de Teste
 - Abrir OS para cliente existente retorna 201 Created
 - Abrir OS para cliente inexistente retorna 404 Not Found
-- Abrir OS com descrição vazia retorna 400 Bad Request
-- Consultar OS recém-criada retorna status Aberta
+- Abrir OS com descriÃ§Ã£o vazia retorna 400 Bad Request
+- Consultar OS recÃ©m-criada retorna status Aberta
 
 ---
 
-### 2.3 Status da Ordem de Serviço
+### 2.3 Status da Ordem de ServiÃ§o
 
 #### Objetivo
-Permitir acompanhar o ciclo do serviço.
+Permitir acompanhar o ciclo do serviÃ§o.
 
 #### Estados
 - Aberta
-- Em Execução
+- Em ExecuÃ§Ã£o
 - Finalizada
 
-#### Regras de Transição
-- Aberta -> Em Execução (permitido)
-- Em Execução -> Finalizada (permitido)
+#### Regras de TransiÃ§Ã£o
+- Aberta -> Em ExecuÃ§Ã£o (permitido)
+- Em ExecuÃ§Ã£o -> Finalizada (permitido)
 - Aberta -> Finalizada (bloqueado)
 - Finalizada -> qualquer outro (bloqueado)
 
-#### Operações
+#### OperaÃ§Ãµes
 - Alterar status
 - Registrar datas opcionais:
-  - StartedAt ao entrar em Em Execução
+  - StartedAt ao entrar em Em ExecuÃ§Ã£o
   - FinishedAt ao entrar em Finalizada
 
 #### Casos de Teste
-- Alterar Aberta para Em Execução retorna 200 OK
-- Alterar Em Execução para Finalizada retorna 200 OK
+- Alterar Aberta para Em ExecuÃ§Ã£o retorna 200 OK
+- Alterar Em ExecuÃ§Ã£o para Finalizada retorna 200 OK
 - Alterar Finalizada para outro status retorna 409 Conflict
 
 ---
 
-### 2.4 Valor do Serviço
+### 2.4 Valor do ServiÃ§o
 
 #### Objetivo
-Permitir definir ou ajustar o valor do serviço.
+Permitir definir ou ajustar o valor do serviÃ§o.
 
 #### Campos
 - Valor (decimal(18,2))
 - Moeda (BRL)
-- Data de atualização (opcional)
+- Data de atualizaÃ§Ã£o (opcional)
 
-#### Regras de Negócio
-1. Valor pode ser nulo enquanto Aberta ou Em Execução.
-2. Valor pode ser obrigatório para finalizar a OS.
-3. Valor não pode ser negativo.
-4. Após Finalizada, não permitir alteração.
+#### Regras de NegÃ³cio
+1. Valor pode ser nulo enquanto Aberta ou Em ExecuÃ§Ã£o.
+2. Valor pode ser obrigatÃ³rio para finalizar a OS.
+3. Valor nÃ£o pode ser negativo.
+4. ApÃ³s Finalizada, nÃ£o permitir alteraÃ§Ã£o.
 
-#### Operações
+#### OperaÃ§Ãµes
 - Definir ou alterar valor
 - Validar valor ao finalizar OS
 
@@ -141,7 +141,7 @@ Permitir definir ou ajustar o valor do serviço.
 ### 2.5 Fotos Antes / Depois (Opcional)
 
 #### Objetivo
-Permitir anexar evidências do serviço.
+Permitir anexar evidÃªncias do serviÃ§o.
 
 #### Campos do Anexo
 - Id
@@ -153,10 +153,10 @@ Permitir anexar evidências do serviço.
 - StoragePath
 - UploadedAt
 
-#### Regras de Negócio
+#### Regras de NegÃ³cio
 1. Aceitar apenas JPG e PNG.
-2. Tamanho máximo sugerido: 5MB.
-3. Permitir múltiplos anexos.
+2. Tamanho mÃ¡ximo sugerido: 5MB.
+3. Permitir mÃºltiplos anexos.
 4. Upload local em /data/uploads (container ou volume).
 
 ---
@@ -167,7 +167,7 @@ Permitir anexar evidências do serviço.
 - POST /v1/customers
 - GET /v1/customers/{id}
 
-### Ordens de Serviço
+### Ordens de ServiÃ§o
 - POST /v1/service-orders
 - GET /v1/service-orders/{id}
 - PATCH /v1/service-orders/{id}/status
@@ -178,14 +178,20 @@ Permitir anexar evidências do serviço.
 
 ---
 
-## 4. Requisitos Não Funcionais (Opcional)
+## 4. Requisitos NÃ£o Funcionais (Opcional)
 
 ### Performance
-- Upload deve ser feito via streaming, evitando carregar todo o arquivo em memória.
+- Upload deve ser feito via streaming, evitando carregar todo o arquivo em memÃ³ria.
 
-### Segurança
-- Validar content-type e extensão real do arquivo.
+### SeguranÃ§a
+- Validar content-type e extensÃ£o real do arquivo.
 - Sanitizar nome do arquivo.
 
 ### Observabilidade
-- Registrar logs para criação de cliente, abertura de OS e mudança de status.
+- Registrar logs para criaÃ§Ã£o de cliente, abertura de OS e mudanÃ§a de status.
+
+-----------------------
+
+
+<img width="1291" height="912" alt="image" src="https://github.com/user-attachments/assets/87d2bc18-da99-4fad-aa70-253546656022" />
+
