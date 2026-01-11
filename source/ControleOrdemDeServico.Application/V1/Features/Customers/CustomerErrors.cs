@@ -31,6 +31,9 @@ public static class CustomerErrors
     public static readonly Error PhoneAlreadyExists =
         Error.Conflict("Customer.PhoneAlreadyExists", "A customer with this phone already exists.");
 
+    public static readonly Error SearchCriteriaRequired =
+        Error.Validation("Customer.SearchCriteriaRequired","At least phone or document must be informed.");
+
     public static readonly Error NotFound =
         Error.NotFound("Customer.NotFound", "Customer not found.");
 }

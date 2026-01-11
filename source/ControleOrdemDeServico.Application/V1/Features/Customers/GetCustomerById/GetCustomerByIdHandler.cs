@@ -8,16 +8,16 @@ namespace OsService.Application.V1.Features.Customers.GetCustomerById;
 public sealed class GetCustomerByIdHandler(
     ICustomerRepository repo,
     IMapper mapper)
-    : IRequestHandler<GetCustomerByIdQuery, Result<GetCustomerByIdResponse>>
+    : IRequestHandler<GetCustomerByIdQuery, Result<GetCustomerByContactResponse>>
 {
-    public async Task<Result<GetCustomerByIdResponse>> Handle(GetCustomerByIdQuery request, CancellationToken ct)
+    public async Task<Result<GetCustomerByContactResponse>> Handle(GetCustomerByIdQuery request, CancellationToken ct)
     {
         var entity = await repo.GetByIdAsync(request.Id, ct);
 
         if (entity is null)
-            return Result.Failure<GetCustomerByIdResponse>(CustomerErrors.NotFound);
+            return Result.Failure<GetCustomerByContactResponse>(CustomerErrors.NotFound);
 
-        var response = mapper.Map<GetCustomerByIdResponse>(entity);
+        var response = mapper.Map<GetCustomerByContactResponse>(entity);
         return Result.Success(response);
     }
 }
