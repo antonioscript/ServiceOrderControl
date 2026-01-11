@@ -4,7 +4,6 @@ using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.Entities;
 using OsService.Domain.ResultPattern;
 using System.Net.Mail;
-using System.Xml.Linq;
 
 namespace OsService.Application.V1.Features.Customers.CreateCustomer;
 
@@ -16,15 +15,17 @@ public sealed class CreateCustomerHandler(
 {
     public async Task<Result<Guid>> Handle(CreateCustomerCommand request, CancellationToken ct)
     {
-        var primitiveValidation = ValidatePrimitiveRules(request);
-        if (primitiveValidation.IsFailure)
-            return Result.Failure<Guid>(primitiveValidation.Error); //TODO: Resolver retorno GUID zerado
+        var normalized = Normalize(request);
 
-        var duplicationValidation = await ValidateDuplicatesAsync(request, repo, ct);
+        var primitiveValidation = ValidatePrimitiveRules(normalized);
+        if (primitiveValidation.IsFailure)
+            return Result.Failure<Guid>(primitiveValidation.Error); 
+
+        var duplicationValidation = await ValidateDuplicatesAsync(normalized, repo, ct);
         if (duplicationValidation.IsFailure)
             return Result.Failure<Guid>(duplicationValidation.Error);
 
-        var customer = mapper.Map<CustomerEntity>(request);
+        var customer = mapper.Map<CustomerEntity>(normalized);
 
         await repo.AddAsync(customer, ct);
         await unitOfWork.CommitAsync(ct);
@@ -32,36 +33,42 @@ public sealed class CreateCustomerHandler(
         return Result.Success(customer.Id);
     }
 
+    private static CreateCustomerCommand Normalize(CreateCustomerCommand request)
+    {
+        return request with
+        {
+            Name = request.Name.Trim(),
+            Phone = request.Phone?.Trim(),
+            Email = request.Email?.Trim(),
+            Document = request.Document?.Trim()
+        };
+    }
+
     private static Result ValidatePrimitiveRules(CreateCustomerCommand request)
     {
-        var name = request.Name?.Trim();
-        var phone = request.Phone?.Trim();
-        var email = request.Email?.Trim();
-        var document = request.Document?.Trim();
-
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(request.Name))
             return Result.Failure(CustomerErrors.NameRequired);
 
-        if (name.Length < 2)
+        if (request.Name.Length < 2)
             return Result.Failure(CustomerErrors.NameTooShort);
 
-        if (name.Length > 150)
+        if (request.Name.Length > 150)
             return Result.Failure(CustomerErrors.NameTooLong);
 
-        if (!string.IsNullOrWhiteSpace(phone) && phone.Length > 30)
+        if (!string.IsNullOrWhiteSpace(request.Phone) && request.Phone.Length > 30)
             return Result.Failure(CustomerErrors.PhoneTooLong);
 
-        if (!string.IsNullOrWhiteSpace(document) && document.Length > 30)
+        if (!string.IsNullOrWhiteSpace(request.Document) && request.Document.Length > 30)
             return Result.Failure(CustomerErrors.DocumentTooLong);
 
-        if (!string.IsNullOrWhiteSpace(email))
+        if (!string.IsNullOrWhiteSpace(request.Email))
         {
-            if (email.Length > 120)
+            if (request.Email.Length > 120)
                 return Result.Failure(CustomerErrors.EmailTooLong);
 
             try
             {
-                _ = new MailAddress(email);
+                _ = new MailAddress(request.Email);
             }
             catch
             {
@@ -77,24 +84,24 @@ public sealed class CreateCustomerHandler(
         ICustomerRepository repo,
         CancellationToken ct)
     {
-        var phone = string.IsNullOrWhiteSpace(request.Phone) ? null : request.Phone.Trim();
-        var document = string.IsNullOrWhiteSpace(request.Document) ? null : request.Document.Trim();
 
-        if (document is not null)
+        if (request.Document is not null)
         {
-            var existsDoc = await repo.ExistsByDocumentAsync(document, ct);
+            var existsDoc = await repo.ExistsByDocumentAsync(request.Document, ct);
             if (existsDoc)
                 return Result.Failure(CustomerErrors.DocumentAlreadyExists);
         }
 
-        if (phone is not null)
+        if (request.Phone is not null)
         {
-            var existsPhone = await repo.ExistsByPhoneAsync(phone, ct);
+            var existsPhone = await repo.ExistsByPhoneAsync(request.Phone, ct);
             if (existsPhone)
                 return Result.Failure(CustomerErrors.PhoneAlreadyExists);
         }
 
         return Result.Success();
     }
+
+    
 
 }

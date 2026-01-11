@@ -1,7 +1,5 @@
 ﻿namespace OsService.Domain.ResultPattern;
 
-/
-
 public class Result
 {
     public bool IsSuccess { get; }
@@ -26,11 +24,11 @@ public class Result
 
 public class Result<T> : Result
 {
-    public T Value { get; }
+    public T Data { get; }
 
     protected internal Result(T value, bool isSuccess, Error error)
         : base(isSuccess, error)
     {
-        Value = value;
+        Data = value;
     }
 }
