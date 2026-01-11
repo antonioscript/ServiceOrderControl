@@ -2,6 +2,8 @@
 using MediatR;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.Entities;
+using OsService.Domain.ResultPattern;
+using System.Net.Mail;
 
 namespace OsService.Application.V1.Features.Customers.CreateCustomer;
 
@@ -9,28 +11,97 @@ public sealed class CreateCustomerHandler(
     ICustomerRepository repo,
     IUnitOfWork unitOfWork,
     IMapper mapper)
-    : IRequestHandler<CreateCustomerCommand, Guid>
+    : IRequestHandler<CreateCustomerCommand, Result<Guid>>
 {
-    public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken ct)
+    public async Task<Result<Guid>> Handle(CreateCustomerCommand request, CancellationToken ct)
     {
-        ValidateRequest(request);
+        var normalized = Normalize(request);
 
-        var customer = mapper.Map<CustomerEntity>(request);
+        var primitiveValidation = ValidatePrimitiveRules(normalized);
+        if (primitiveValidation.IsFailure)
+            return Result.Failure<Guid>(primitiveValidation.Error); 
+
+        var duplicationValidation = await ValidateDuplicatesAsync(normalized, repo, ct);
+        if (duplicationValidation.IsFailure)
+            return Result.Failure<Guid>(duplicationValidation.Error);
+
+        var customer = mapper.Map<CustomerEntity>(normalized);
 
         await repo.AddAsync(customer, ct);
         await unitOfWork.CommitAsync(ct);
 
-
-        //Todo: Pensar no Response
-        return customer.Id;
+        return Result.Success(customer.Id);
     }
 
-    private static void ValidateRequest(CreateCustomerCommand request)
+    private static CreateCustomerCommand Normalize(CreateCustomerCommand request)
+    {
+        return request with
+        {
+            Name = request.Name.Trim(),
+            Phone = request.Phone?.Trim(),
+            Email = request.Email?.Trim(),
+            Document = request.Document?.Trim()
+        };
+    }
+
+    private static Result ValidatePrimitiveRules(CreateCustomerCommand request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
-            throw new ArgumentException("Name is required.", nameof(request.Name));
+            return Result.Failure(CustomerErrors.NameRequired);
+
+        if (request.Name.Length < 2)
+            return Result.Failure(CustomerErrors.NameTooShort);
 
         if (request.Name.Length > 150)
-            throw new ArgumentException("Name must be <= 150 characters.", nameof(request.Name));
+            return Result.Failure(CustomerErrors.NameTooLong);
+
+        if (!string.IsNullOrWhiteSpace(request.Phone) && request.Phone.Length > 30)
+            return Result.Failure(CustomerErrors.PhoneTooLong);
+
+        if (!string.IsNullOrWhiteSpace(request.Document) && request.Document.Length > 30)
+            return Result.Failure(CustomerErrors.DocumentTooLong);
+
+        if (!string.IsNullOrWhiteSpace(request.Email))
+        {
+            if (request.Email.Length > 120)
+                return Result.Failure(CustomerErrors.EmailTooLong);
+
+            try
+            {
+                _ = new MailAddress(request.Email);
+            }
+            catch
+            {
+                return Result.Failure(CustomerErrors.InvalidEmail);
+            }
+        }
+
+        return Result.Success();
     }
+
+    private static async Task<Result> ValidateDuplicatesAsync(
+        CreateCustomerCommand request,
+        ICustomerRepository repo,
+        CancellationToken ct)
+    {
+
+        if (request.Document is not null)
+        {
+            var existsDoc = await repo.ExistsByDocumentAsync(request.Document, ct);
+            if (existsDoc)
+                return Result.Failure(CustomerErrors.DocumentAlreadyExists);
+        }
+
+        if (request.Phone is not null)
+        {
+            var existsPhone = await repo.ExistsByPhoneAsync(request.Phone, ct);
+            if (existsPhone)
+                return Result.Failure(CustomerErrors.PhoneAlreadyExists);
+        }
+
+        return Result.Success();
+    }
+
+    
+
 }

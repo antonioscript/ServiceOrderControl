@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using OsService.ApiService.Extensions;
 using OsService.Application.V1.Features.Customers.CreateCustomer;
 using OsService.Application.V1.Features.Customers.GetCustomerById;
 
@@ -12,19 +13,14 @@ public sealed class CustomersController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCustomerCommand cmd, CancellationToken ct)
     {
-        var id = await mediator.Send(cmd, ct);
-        return Ok(id);
+        var result = await mediator.Send(cmd, ct);
+        return result.ToActionResult(this, id => CreatedAtAction(nameof(GetById), new { id }, new { id }));
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<GetCustomerByIdResponse>> GetById(Guid id, CancellationToken ct)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
         var result = await mediator.Send(new GetCustomerByIdQuery(id), ct);
-
-        //TODO: Não vai precisar disso, depois rever os retornos
-        if (result is null)
-            return NotFound();
-
-        return Ok(result);
+        return result.ToActionResult(this);
     }
 }
