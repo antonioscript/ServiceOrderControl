@@ -1,10 +1,10 @@
 ﻿using OsService.Domain.Entities;
 using OsService.Domain.Enums;
 using MediatR;
-using OsService.Application.V1.Features.ServiceOrders.Command;
+using OsService.Application.V1.UseCases.ServiceOrders.Command;
 using OsService.Application.V1.Abstractions.Persistence;
 
-namespace OsService.Application.V1.Features.ServiceOrders.OpenServiceOrder;
+namespace OsService.Application.V1.UseCases.ServiceOrders.OpenServiceOrder;
 
 public sealed class OpenServiceOrderHandler(
    ICustomerRepository customers

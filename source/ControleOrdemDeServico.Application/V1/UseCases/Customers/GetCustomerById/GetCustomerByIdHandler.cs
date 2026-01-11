@@ -3,7 +3,7 @@ using MediatR;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.ResultPattern;
 
-namespace OsService.Application.V1.Features.Customers.GetCustomerById;
+namespace OsService.Application.V1.UseCases.Customers.GetCustomerById;
 
 public sealed class GetCustomerByIdHandler(
     ICustomerRepository repo,

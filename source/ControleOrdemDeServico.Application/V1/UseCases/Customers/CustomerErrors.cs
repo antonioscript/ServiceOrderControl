@@ -1,6 +1,6 @@
 ﻿using OsService.Domain.ResultPattern;
 
-namespace OsService.Application.V1.Features.Customers;
+namespace OsService.Application.V1.UseCases.Customers;
 
 public static class CustomerErrors
 {

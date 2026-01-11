@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using OsService.Application.V1.Features.ServiceOrders.Command;
+using OsService.Application.V1.UseCases.ServiceOrders.Command;
 
 namespace OsService.ApiService.Controllers;
 

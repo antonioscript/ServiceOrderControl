@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
 using OsService.Application.V1.Abstractions.Persistence;
-using OsService.Application.V1.Features.Customers.GetCustomerById;
+using OsService.Application.V1.UseCases.Customers.GetCustomerById;
 using OsService.Domain.Entities;
 using OsService.Domain.ResultPattern;
 using System.Linq;
 
-namespace OsService.Application.V1.Features.Customers.GetCustomerByContact;
+namespace OsService.Application.V1.UseCases.Customers.GetCustomerByContact;
 
 public sealed class GetCustomerByContactHandler(
     ICustomerRepository repo,
