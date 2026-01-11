@@ -4,10 +4,10 @@ using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Application.V1.UseCases.Customers.GetCustomerById;
 using OsService.Domain.Entities;
 using OsService.Domain.ResultPattern;
-using System.Linq;
 
 namespace OsService.Application.V1.UseCases.Customers.GetCustomerByContact;
 
+//TODO: Transformar em UseCase
 public sealed class GetCustomerByContactHandler(
     ICustomerRepository repo,
     IMapper mapper
