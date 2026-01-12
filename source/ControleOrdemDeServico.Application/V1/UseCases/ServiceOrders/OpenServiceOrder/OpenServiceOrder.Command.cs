@@ -8,7 +8,6 @@ public partial class OpenServiceOrder
     public sealed record Command(
         Guid CustomerId,
         string Description,
-        decimal? Price,
-        string? Coin
+        decimal? Price
     ) : IRequest<Result<Response>>;
 }

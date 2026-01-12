@@ -32,8 +32,8 @@ public partial class OpenServiceOrder
 
 			var entity = mapper.Map<ServiceOrderEntity>(normalized);
 
-			entity.Status = ServiceOrderStatus.Open;
-			entity.OpenedAt = DateTime.UtcNow;
+			//entity.Status = ServiceOrderStatus.Open;
+			//entity.OpenedAt = DateTime.UtcNow;
 
 			await serviceOrders.AddAsync(entity, ct);
 			await unitOfWork.CommitAsync(ct);

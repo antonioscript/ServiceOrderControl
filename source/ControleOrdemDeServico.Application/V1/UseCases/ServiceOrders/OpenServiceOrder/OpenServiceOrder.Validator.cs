@@ -8,19 +8,19 @@ public partial class OpenServiceOrder
     {
         var description = request.Description?.Trim() ?? string.Empty;
 
-        string? coin = null;
+        //string? coin = null;
 
-        if (request.Price is not null)
-        {
-            coin = string.IsNullOrWhiteSpace(request.Coin)
-                ? "BRL"
-                : request.Coin.Trim().ToUpperInvariant();
-        }
+        //if (request.Price is not null)
+        //{
+        //    coin = string.IsNullOrWhiteSpace(request.Coin)
+        //        ? "BRL"
+        //        : request.Coin.Trim().ToUpperInvariant();
+        //}
 
         return request with
         {
-            Description = description,
-            Coin = coin
+            Description = description
+            //Coin = coin
         };
     }
 
