@@ -1,4 +1,5 @@
 
+using OsService.ApiService.Extensions;
 using OsService.Application; 
 using OsService.Infrastructure;                      
 using OsService.ServiceDefaults.DependencyInjection; 
@@ -20,6 +21,8 @@ builder.Services.AddModules(builder.Configuration,
 builder.Services.AddProblemDetails();
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var app = builder.Build();
 

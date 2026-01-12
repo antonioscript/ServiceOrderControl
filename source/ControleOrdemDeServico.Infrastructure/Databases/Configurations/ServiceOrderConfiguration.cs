@@ -43,6 +43,9 @@ public class ServiceOrderConfiguration : IEntityTypeConfiguration<ServiceOrderEn
 
         builder.Property(x => x.UpdatedPriceAt);
 
+        builder.Property(x => x.StartedAt);
+        builder.Property(x => x.FinishedAt);
+
         builder.HasIndex(x => x.CustomerId);
     }
 }
