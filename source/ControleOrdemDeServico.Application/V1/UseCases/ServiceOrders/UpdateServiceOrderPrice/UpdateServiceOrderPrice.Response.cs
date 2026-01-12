@@ -1,6 +1,6 @@
-﻿namespace OsService.Application.V1.UseCases.ServiceOrders.OpenServiceOrder;
+﻿namespace OsService.Application.V1.UseCases.ServiceOrders.UpdateServiceOrderPrice;
 
-public partial class OpenServiceOrder
+public partial class UpdateServiceOrderPrice
 {
     public sealed record Response(
         Guid Id,

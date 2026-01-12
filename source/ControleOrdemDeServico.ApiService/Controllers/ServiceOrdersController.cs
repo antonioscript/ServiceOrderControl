@@ -5,6 +5,7 @@ using OsService.Application.V1.UseCases.ServiceOrders.ChangeServiceOrderStatus;
 using OsService.Application.V1.UseCases.ServiceOrders.GetServiceOrderById;
 using OsService.Application.V1.UseCases.ServiceOrders.OpenServiceOrder;
 using OsService.Application.V1.UseCases.ServiceOrders.SearchServiceOrders;
+using OsService.Application.V1.UseCases.ServiceOrders.UpdateServiceOrderPrice;
 using OsService.Domain.Enums;
 using static OsService.Application.V1.UseCases.ServiceOrders.ChangeServiceOrderStatus.ChangeServiceOrderStatus;
 
@@ -93,6 +94,28 @@ public sealed class ServiceOrdersController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(cmd, ct);
         return result.ToActionResult(this);
     }
+
+
+    /// <summary>
+    /// Define ou altera o valor da Ordem de Serviço.
+    /// </summary>
+    /// <response code="200">Valor atualizado com sucesso</response>
+    /// <response code="400">Validação inválida</response>
+    /// <response code="404">OS não encontrada</response>
+    /// <response code="409">Não é permitido alterar o valor para OS finalizada</response>
+    [HttpPut("{id:guid}/price")]
+    public async Task<IActionResult> UpdatePrice(
+        Guid id,
+        [FromBody] UpdateServiceOrderPrice.UpdateServiceOrderPriceCommand body,
+        CancellationToken ct)
+    {
+        // garante que o Id vem da rota (e ignora o que vier no JSON)
+        var cmd = body with { Id = id };
+
+        var result = await mediator.Send(cmd, ct);
+        return result.ToActionResult(this);
+    }
+
 
 
 }

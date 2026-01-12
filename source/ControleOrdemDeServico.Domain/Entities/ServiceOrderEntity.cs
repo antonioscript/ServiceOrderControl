@@ -16,8 +16,8 @@ public sealed class ServiceOrderEntity : BaseEntity
     public DateTime? StartedAt { get; set; }
     public DateTime? FinishedAt { get; set; }
 
-    public decimal? Price { get; init; }
-    public string? Coin { get; init; } = "BRL";
+    public decimal? Price { get; set; }
+    public string? Coin { get; set; } = "BRL"; //TODO: Acredito que as validações que usam isso estão incorretas
     public DateTime? UpdatedPriceAt { get; set; }
 
 }
