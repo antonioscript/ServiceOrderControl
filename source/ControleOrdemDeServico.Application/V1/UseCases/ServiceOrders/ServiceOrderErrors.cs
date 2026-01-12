@@ -39,4 +39,9 @@ public static class ServiceOrderErrors
 
     public static readonly Error PriceRequiredToFinish =
         Error.Validation("ServiceOrder.PriceRequiredToFinish", "A service order must have a value to be finished.");
+
+    public static readonly Error PriceChangeNotAllowed =
+        Error.Conflict("ServiceOrder.PriceChangeNotAllowed", "Price cannot be changed after the service order is finished.");
+
+
 }
