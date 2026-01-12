@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using OsService.ApiService.Extensions;
+using OsService.Application.V1.UseCases.ServiceOrders.ChangeServiceOrderStatus;
 using OsService.Application.V1.UseCases.ServiceOrders.GetServiceOrderById;
 using OsService.Application.V1.UseCases.ServiceOrders.OpenServiceOrder;
 using OsService.Application.V1.UseCases.ServiceOrders.SearchServiceOrders;
 using OsService.Domain.Enums;
+using static OsService.Application.V1.UseCases.ServiceOrders.ChangeServiceOrderStatus.ChangeServiceOrderStatus;
 
 namespace OsService.ApiService.Controllers;
 
@@ -19,9 +21,6 @@ public sealed class ServiceOrdersController(IMediator mediator) : ControllerBase
     /// <response code="400">Erro de validação (descrição, preço, etc.)</response>
     /// <response code="404">Cliente não encontrado</response>
     [HttpPost]
-    [ProducesResponseType(typeof(OpenServiceOrder.Response), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Open(
         [FromBody] OpenServiceOrder.Command cmd,
         CancellationToken ct)
@@ -65,6 +64,33 @@ public sealed class ServiceOrdersController(IMediator mediator) : ControllerBase
     CancellationToken ct)
     {
         var result = await mediator.Send(query, ct);
+        return result.ToActionResult(this);
+    }
+
+
+    /// <summary>
+    /// Altera o status da Ordem de Serviço.
+    /// </summary>
+    /// <remarks>
+    /// Regras:
+    /// - Aberta -> EmExecução (permitido)
+    /// - EmExecução -> Finalizada (permitido, exige valor)
+    /// - Aberta -> Finalizada (409)
+    /// - Finalizada -> qualquer outro (409)
+    /// </remarks>
+    /// <response code="200">Status alterado com sucesso</response>
+    /// <response code="400">Validação inválida</response>
+    /// <response code="404">OS não encontrada</response>
+    /// <response code="409">Transição de status não permitida</response>
+    [HttpPatch("{id:guid}/status")]
+    public async Task<IActionResult> ChangeStatus(
+        Guid id,
+        [FromBody] ChangeServiceOrderCommand body,
+        CancellationToken ct)
+    {
+        var cmd = body with { Id = id };
+
+        var result = await mediator.Send(cmd, ct);
         return result.ToActionResult(this);
     }
 

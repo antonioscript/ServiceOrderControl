@@ -10,10 +10,14 @@ public sealed class ServiceOrderEntity : BaseEntity
     public int Number { get; init; } //Gerado automaticamente
     public Guid CustomerId { get; init; }
     public string Description { get; init; } = default!;
-    public ServiceOrderStatus Status { get; init; } = ServiceOrderStatus.Open;
-    public DateTime OpenedAt { get; set; } = DateTime.UtcNow;
+    public ServiceOrderStatus Status { get; set; } = ServiceOrderStatus.Open;
+    public DateTime OpenedAt { get; private set; } = DateTime.UtcNow;
+
+    public DateTime? StartedAt { get; set; }
+    public DateTime? FinishedAt { get; set; }
+
     public decimal? Price { get; init; }
     public string? Coin { get; init; } = "BRL";
-    public DateTime? UpdatedPriceAt { get; init; }
+    public DateTime? UpdatedPriceAt { get; set; }
 
 }

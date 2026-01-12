@@ -9,15 +9,15 @@ public partial class SearchServiceOrders
         // Pelo menos um filtro tem que vir preenchido
         if (!request.CustomerId.HasValue &&
             !request.Status.HasValue &&
-            !request.From.HasValue &&
-            !request.To.HasValue)
+            !request.StartDate.HasValue &&
+            !request.EndDate.HasValue)
         {
             return Result.Failure(ServiceOrderErrors.SearchCriteriaRequired);
         }
 
         // Se veio período completo, from <= to
-        if (request.From.HasValue && request.To.HasValue &&
-            request.From.Value > request.To.Value)
+        if (request.StartDate.HasValue && request.EndDate.HasValue &&
+            request.StartDate.Value > request.EndDate.Value)
         {
             return Result.Failure(ServiceOrderErrors.InvalidPeriod);
         }

@@ -30,4 +30,13 @@ public static class ServiceOrderErrors
 
     public static readonly Error InvalidPeriod =
         Error.Validation("ServiceOrder.InvalidPeriod","The initial date cannot be greater than the final date.");
+
+    public static readonly Error InvalidStatusTransition =
+        Error.Conflict("ServiceOrder.InvalidStatusTransition","This status transition is not allowed.");
+
+    public static readonly Error AlreadyFinished =
+        Error.Conflict("ServiceOrder.AlreadyFinished","A finished service order cannot change status.");
+
+    public static readonly Error PriceRequiredToFinish =
+        Error.Validation("ServiceOrder.PriceRequiredToFinish", "A service order must have a value to be finished.");
 }

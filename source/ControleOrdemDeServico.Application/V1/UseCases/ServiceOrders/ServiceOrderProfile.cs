@@ -15,6 +15,6 @@ public class ServiceOrderProfile : Profile
         CreateMap<ServiceOrderEntity, Response>();
         CreateMap<ServiceOrderEntity, GetServiceOrderById.GetServiceOrderById.Response>();
         CreateMap<ServiceOrderEntity, SearchServiceOrders.SearchServiceOrders.Response>();
-
+        CreateMap<ServiceOrderEntity, ChangeServiceOrderStatus.ChangeServiceOrderStatus.Response>();
     }
 }
