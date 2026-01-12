@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using OsService.Application.V1.Features.Customers.CreateCustomer;
-using OsService.Application.V1.Features.Customers.GetCustomerById;
+using OsService.Application.V1.UseCases.Customers.GetCustomerById;
 using OsService.Domain.Entities;
+using static OsService.Application.V1.UseCases.Customers.CreateCustomer.CreateCustomer;
 
-namespace OsService.Application.V1.Features.Customers;
+namespace OsService.Application.V1.UseCases.Customers;
 
 public sealed class CustomerProfile : Profile
 {

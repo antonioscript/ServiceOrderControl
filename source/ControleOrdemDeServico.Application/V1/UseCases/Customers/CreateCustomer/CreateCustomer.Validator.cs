@@ -1,38 +1,11 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using System.Net.Mail;
 using OsService.Application.V1.Abstractions.Persistence;
-using OsService.Domain.Entities;
 using OsService.Domain.ResultPattern;
-using System.Net.Mail;
 
-namespace OsService.Application.V1.Features.Customers.CreateCustomer;
+namespace OsService.Application.V1.UseCases.Customers.CreateCustomer;
 
-public sealed class CreateCustomerHandler(
-    ICustomerRepository repo,
-    IUnitOfWork unitOfWork,
-    IMapper mapper)
-    : IRequestHandler<CreateCustomerCommand, Result<Guid>>
+public partial class CreateCustomer
 {
-    public async Task<Result<Guid>> Handle(CreateCustomerCommand request, CancellationToken ct)
-    {
-        var normalized = Normalize(request);
-
-        var primitiveValidation = ValidatePrimitiveRules(normalized);
-        if (primitiveValidation.IsFailure)
-            return Result.Failure<Guid>(primitiveValidation.Error); 
-
-        var duplicationValidation = await ValidateDuplicatesAsync(normalized, repo, ct);
-        if (duplicationValidation.IsFailure)
-            return Result.Failure<Guid>(duplicationValidation.Error);
-
-        var customer = mapper.Map<CustomerEntity>(normalized);
-
-        await repo.AddAsync(customer, ct);
-        await unitOfWork.CommitAsync(ct);
-
-        return Result.Success(customer.Id);
-    }
-
     private static CreateCustomerCommand Normalize(CreateCustomerCommand request)
     {
         return request with
@@ -84,7 +57,6 @@ public sealed class CreateCustomerHandler(
         ICustomerRepository repo,
         CancellationToken ct)
     {
-
         if (request.Document is not null)
         {
             var existsDoc = await repo.ExistsByDocumentAsync(request.Document, ct);
@@ -101,7 +73,4 @@ public sealed class CreateCustomerHandler(
 
         return Result.Success();
     }
-
-    
-
 }

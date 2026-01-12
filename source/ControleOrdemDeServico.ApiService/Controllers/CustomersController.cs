@@ -1,9 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using OsService.ApiService.Extensions;
-using OsService.Application.V1.Features.Customers.CreateCustomer;
-using OsService.Application.V1.Features.Customers.GetCustomerByContact;
-using OsService.Application.V1.Features.Customers.GetCustomerById;
+using OsService.Application.V1.UseCases.Customers.CreateCustomer;
+using OsService.Application.V1.UseCases.Customers.GetCustomerByContact;
+using OsService.Application.V1.UseCases.Customers.GetCustomerById;
+using static OsService.Application.V1.UseCases.Customers.CreateCustomer.CreateCustomer;
 
 namespace OsService.ApiService.Controllers;
 

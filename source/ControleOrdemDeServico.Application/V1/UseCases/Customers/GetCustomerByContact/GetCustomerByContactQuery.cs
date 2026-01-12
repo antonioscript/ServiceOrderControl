@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using OsService.Application.V1.Features.Customers.GetCustomerById;
+using OsService.Application.V1.UseCases.Customers.GetCustomerById;
 using OsService.Domain.ResultPattern;
 
-namespace OsService.Application.V1.Features.Customers.GetCustomerByContact;
+namespace OsService.Application.V1.UseCases.Customers.GetCustomerByContact;
 
 public sealed record GetCustomerByContactQuery(
     string? Phone,

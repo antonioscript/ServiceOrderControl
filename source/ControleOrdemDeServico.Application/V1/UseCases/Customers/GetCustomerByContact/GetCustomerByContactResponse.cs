@@ -1,4 +1,4 @@
-﻿namespace OsService.Application.V1.Features.Customers.GetCustomerById;
+﻿namespace OsService.Application.V1.UseCases.Customers.GetCustomerById;
 
 public sealed record GetCustomerByContactResponse(
     Guid Id,

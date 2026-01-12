@@ -3,8 +3,9 @@ using MediatR;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.ResultPattern;
 
-namespace OsService.Application.V1.Features.Customers.GetCustomerById;
+namespace OsService.Application.V1.UseCases.Customers.GetCustomerById;
 
+//TODO: Transformar em UseCase
 public sealed class GetCustomerByIdHandler(
     ICustomerRepository repo,
     IMapper mapper)
