@@ -44,47 +44,27 @@ API para cadastro de clientes e controle de Ordens de Serviço (OS), construída
 
 ---
 
-## Visão geral
+### Sumário
 
-O **ServiceOrderControl** é uma API responsável por:
+- [Arquitetura da solução](#arquitetura-da-solução)
+- [Arquitetura de Código](#arquitetura-de-código)
+  - [Camada Domain](#camada-domain)
+  - [Camada Application](#camada-application)
+  - [Camada Infrastructure](#camada-infrastructure)
+  - [Camada ApiService](#camada-apiservice)
+- [Módulos e composição (`IModule`)](#módulos-e-composição-imodule)
+- [UseCases](#usecases)
+- [Padrão Mediator](#padrão-mediator)
+- [AutoMapper](#automapper)
+- [Padrão Result](#padrão-result)
+- [Padronização de respostas HTTP (Result → IActionResult)](#padronização-de-respostas-http-result--iactionresult)
+- [GlobalExceptionHandler](#globalexceptionhandler)
+- [Padrão Unit of Work](#padrão-unit-of-work)
+- [Padrão Repository](#padrão-repository)
+- [ORM Entity Framework Core](#orm-entity-framework-core)
 
-- Cadastrar **clientes**;
-- Abrir **ordens de serviço** vinculadas a clientes;
-- Atualizar o **status** de uma OS (ex.: Aberta, Em execução, Finalizada);
-- Atualizar o **valor** da OS;
-- Anexar imagens de **antes/depois** do serviço na OS;
-- Consultar OS por **id**, **cliente**, **status** e/ou **período de abertura**.
+- [Descritivo do Desafio](#Descritivo-do-Desafio)
 
-O projeto foi construído com foco em:
-
-- **Separação clara de responsabilidades** (DDD + camadas);
-- **Facilidade de manutenção** (handlers por caso de uso, Result Pattern);
-- **Observabilidade e tratativa de erros** coerente para quem consome a API;
-- Código pronto para crescer (mais módulos, mensageria, background jobs, etc).
-
----
-
-## Stack e principais decisões
-
-- **Linguagem / Runtime**
-  - .NET 8
-  - C# com **construtor primário** em controllers e handlers para DI mais enxuta.
-- **Persistência**
-  - SQL Server
-  - **Entity Framework Core** (migração do Dapper para EF Core)
-- **Arquitetura**
-  - DDD com camadas: **Domain**, **Application**, **Infrastructure**, **ApiService**
-  - CQRS por Feature: **Command/Query + Handler + Response**
-  - Padrão de composição via **`IModule`** (AddModules)
-- **Infra cross-cutting**
-  - MediatR para orquestrar UseCases a partir da API
-  - AutoMapper para mapear entidades de domínio para DTOs de resposta
-  - Result Pattern (`Result<T>`, `Error`) para modelar sucesso/erro
-  - SonarQube/SonarLint para análise estática
-  - Global Exception Handler + ProblemDetails (RFC 7807)
-  - Swagger/Scalar com documentação em PT-BR
-
----
 
 ## Sobre o desenvolvimento do Projeto
 
