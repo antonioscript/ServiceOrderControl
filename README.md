@@ -1,19 +1,3 @@
-
-
------------------------
-
-
-<img width="1291" height="912" alt="image" src="https://github.com/user-attachments/assets/87d2bc18-da99-4fad-aa70-253546656022" />
-
-
-<img width="964" height="547" alt="image" src="https://github.com/user-attachments/assets/fb87deea-315b-45cb-98d0-fca3e92152d2" />
-
-
-
-
--------------------
-
-
 # ServiceOrderControl
 
 API para cadastro de clientes e controle de Ordens de Serviço (OS), construída em .NET 8 com foco em **arquitetura em camadas, DDD**, boas práticas de **design orientado a domínio** e um código fácil de evoluir.
@@ -21,7 +5,7 @@ API para cadastro de clientes e controle de Ordens de Serviço (OS), construída
 
 ### Sumário
 
-- [Sobre o desenvolvimento do Projeto](#sobre-o-desenvolvimento-do-Projeto)
+- [Sobre o desenvolvimento do Projeto](##sobre-o-desenvolvimento-do-Projeto)
 - [Arquitetura da solução](#arquitetura-da-solução)
 - [Arquitetura de Código](#arquitetura-de-código)
   - [Camada Domain](#camada-domain)
@@ -42,7 +26,38 @@ API para cadastro de clientes e controle de Ordens de Serviço (OS), construída
 - [Descritivo do Desafio](#Descritivo-do-Desafio)
 
 
-## Sobre o desenvolvimento do Projeto
+
+## Sobre o desenvolvimento do projeto
+
+Durante o desenvolvimento eu mantive um **Project** no próprio GitHub, usando a aba **Projects** do repositório para organizar tudo que precisava ser feito:  
+issues, ideias, ajustes de arquitetura, validações, logs, Docker, etc.
+
+> Board completo aqui:  
+> **https://github.com/users/antonioscript/projects/14**
+
+<img width="1291" height="912" alt="image" src="https://github.com/user-attachments/assets/87d2bc18-da99-4fad-aa70-253546656022" />
+
+
+No board é possível acompanhar:
+
+- **Backlog** – itens levantados desde a leitura inicial do desafio (padrões de arquitetura, validações, cache, logs, container, etc.).
+- **Ready / In progress** – o que foi priorizado e desenvolvido em cada etapa.
+- **Done** – tudo que entrou efetivamente na solução  
+
+Também deixei registrados alguns itens que não eram obrigatórios para a entrega, mas que eu implementaria caso tivesse mais tempo, como:
+
+- Validação mais completa de **CPF/CNPJ** (ex.: usando regex + cálculo de dígitos verificadores).
+- Testes unitários para Handlers, Repositórios e Validators.
+- Implementar cache em alguns endpoints de leitura.
+
+Para garantir a qualidade do código na entrega, usei a extensão do Sonar integrada ao Visual Studio.  
+Ao final do desenvolvimento o relatório indicava nenhum erro ou warning, Atendendo assim ao requisito do desafio de entregar o projetosem erros nem warnings de compilação.
+
+<img width="964" height="547" alt="image" src="https://github.com/user-attachments/assets/fb87deea-315b-45cb-98d0-fca3e92152d2" />
+
+
+
+
 
 ## Arquitetura da solução
 
@@ -145,7 +160,7 @@ builder.Services.AddModules(
     typeof(InfrastructureModule).Assembly,
     typeof(ApiServiceModule).Assembly);
 
-## UseCases
+### UseCases
 
 Dentro de `OsService.Application` eu organizei a camada de aplicação por **Features / UseCases**, seguindo um estilo de **CQRS por cenário**.  
 Em vez de ter um único `CustomerService` grande, cada caso de uso fica isolado em sua própria pasta.
