@@ -1,4 +1,5 @@
 
+using Microsoft.OpenApi;
 using OsService.ApiService.Extensions;
 using OsService.Application; 
 using OsService.Infrastructure;                      
@@ -42,7 +43,9 @@ if (app.Environment.IsDevelopment())
 
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "OpenAPI V1");
+        options.SwaggerEndpoint("/openapi/v1.json", "ServiceOrderControl API v1");
+        options.DocumentTitle = "ServiceOrderControl - API de Ordens de Serviço";
+
     });
 }
 

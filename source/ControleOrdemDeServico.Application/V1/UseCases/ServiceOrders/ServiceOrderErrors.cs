@@ -26,57 +26,35 @@ public static class ServiceOrderErrors
         Error.Validation("ServiceOrder.IdRequired", "Id da ordem de serviço é obrigatório.");
 
     public static readonly Error SearchCriteriaRequired =
-        Error.Validation(
-            "ServiceOrder.SearchCriteriaRequired",
-            "Informe pelo menos um filtro (cliente, status ou período).");
+        Error.Validation("ServiceOrder.SearchCriteriaRequired", "Informe pelo menos um filtro (cliente, status ou período).");
 
     public static readonly Error InvalidPeriod =
-        Error.Validation(
-            "ServiceOrder.InvalidPeriod",
-            "A data inicial não pode ser maior que a data final.");
+        Error.Validation("ServiceOrder.InvalidPeriod", "A data inicial não pode ser maior que a data final.");
 
     public static readonly Error InvalidStatusTransition =
-        Error.Conflict(
-            "ServiceOrder.InvalidStatusTransition",
-            "Esta transição de status não é permitida.");
+        Error.Conflict("ServiceOrder.InvalidStatusTransition","Esta transição de status não é permitida.");
 
     public static readonly Error AlreadyFinished =
-        Error.Conflict(
-            "ServiceOrder.AlreadyFinished",
-            "Uma ordem de serviço finalizada não pode alterar o status.");
+        Error.Conflict("ServiceOrder.AlreadyFinished","Uma ordem de serviço finalizada não pode alterar o status.");
 
     public static readonly Error PriceRequiredToFinish =
-        Error.Validation(
-            "ServiceOrder.PriceRequiredToFinish",
-            "Uma ordem de serviço deve ter um valor para ser finalizada.");
+        Error.Validation("ServiceOrder.PriceRequiredToFinish","Uma ordem de serviço deve ter um valor para ser finalizada.");
 
     public static readonly Error PriceChangeNotAllowed =
-        Error.Conflict(
-            "ServiceOrder.PriceChangeNotAllowed",
-            "O valor não pode ser alterado após a ordem de serviço ser finalizada.");
+        Error.Conflict("ServiceOrder.PriceChangeNotAllowed","O valor não pode ser alterado após a ordem de serviço ser finalizada.");
 
     public static readonly Error AttachmentFileRequired =
-        Error.Validation(
-            "ServiceOrder.AttachmentFileRequired",
-            "Arquivo é obrigatório.");
+        Error.Validation("ServiceOrder.AttachmentFileRequired","Arquivo é obrigatório.");
 
     public static readonly Error AttachmentTooLarge =
-        Error.Validation(
-            "ServiceOrder.AttachmentTooLarge",
-            "Arquivo deve ter no máximo 5 MB.");
+        Error.Validation("ServiceOrder.AttachmentTooLarge", "Arquivo deve ter no máximo 5 MB.");
 
     public static readonly Error AttachmentInvalidContentType =
-        Error.Validation(
-            "ServiceOrder.AttachmentInvalidContentType",
-            "Apenas imagens JPEG e PNG são permitidas.");
+        Error.Validation("ServiceOrder.AttachmentInvalidContentType","Apenas imagens JPEG e PNG são permitidas.");
 
     public static readonly Error AttachmentInvalidExtension =
-        Error.Validation(
-            "Attachment.InvalidExtension",
-            "A extensão do arquivo deve ser .jpg, .jpeg ou .png.");
+        Error.Validation("Attachment.InvalidExtension","A extensão do arquivo deve ser .jpg, .jpeg ou .png.");
 
     public static readonly Error AttachmentInvalidSignature =
-        Error.Validation(
-            "Attachment.InvalidSignature",
-            "O conteúdo do arquivo não corresponde a um formato de imagem.");
+        Error.Validation("Attachment.InvalidSignature","O conteúdo do arquivo não corresponde a um formato de imagem.");
 }
