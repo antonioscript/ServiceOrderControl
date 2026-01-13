@@ -8,14 +8,15 @@ public class ServiceOrderProfile : Profile
 {
     public ServiceOrderProfile()
     {
-        // Command 
         CreateMap<Command, ServiceOrderEntity>();
 
-        // Entity
         CreateMap<ServiceOrderEntity, Response>();
         CreateMap<ServiceOrderEntity, GetServiceOrderById.GetServiceOrderById.Response>();
         CreateMap<ServiceOrderEntity, SearchServiceOrders.SearchServiceOrders.Response>();
         CreateMap<ServiceOrderEntity, ChangeServiceOrderStatus.ChangeServiceOrderStatus.Response>();
         CreateMap<ServiceOrderEntity, UpdateServiceOrderPrice.UpdateServiceOrderPrice.Response>();
+
+        CreateMap<AttachmentEntity, UploadServiceOrderAttachment.UploadServiceOrderAttachment.Response>();
+        CreateMap<AttachmentEntity, GetServiceOrderAttachments.GetServiceOrderAttachments.Response>();
     }
 }

@@ -12,6 +12,8 @@ public class OsServiceDbContext : DbContext
 
     public DbSet<CustomerEntity> Customers => Set<CustomerEntity>();
     public DbSet<ServiceOrderEntity> ServiceOrders => Set<ServiceOrderEntity>();
+    public DbSet<AttachmentEntity> Attachments => Set<AttachmentEntity>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

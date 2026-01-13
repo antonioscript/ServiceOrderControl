@@ -21,6 +21,7 @@ public sealed class InfrastructureModule : IModule
 
         // Repositórios
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

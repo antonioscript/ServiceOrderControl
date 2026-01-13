@@ -43,5 +43,19 @@ public static class ServiceOrderErrors
     public static readonly Error PriceChangeNotAllowed =
         Error.Conflict("ServiceOrder.PriceChangeNotAllowed", "Price cannot be changed after the service order is finished.");
 
+    public static readonly Error AttachmentFileRequired =
+        Error.Validation("ServiceOrder.AttachmentFileRequired", "File is required.");
+
+    public static readonly Error AttachmentTooLarge =
+        Error.Validation("ServiceOrder.AttachmentTooLarge", "File must be at most 5MB.");
+
+    public static readonly Error AttachmentInvalidContentType =
+        Error.Validation("ServiceOrder.AttachmentInvalidContentType", "Only JPEG and PNG images are allowed.");
+
+    public static readonly Error AttachmentInvalidExtension =
+        Error.Validation("Attachment.InvalidExtension", "File extension must be .jpg, .jpeg or .png.");
+
+    public static readonly Error AttachmentInvalidSignature =
+        Error.Validation("Attachment.InvalidSignature", "File content does not match an image format.");//
 
 }
