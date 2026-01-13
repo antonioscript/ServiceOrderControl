@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using OsService.ApiService.Extensions;
 using OsService.Application.V1.UseCases.ServiceOrders.ChangeServiceOrderStatus;
+using OsService.Application.V1.UseCases.ServiceOrders.GetServiceOrderAttachments;
 using OsService.Application.V1.UseCases.ServiceOrders.GetServiceOrderById;
 using OsService.Application.V1.UseCases.ServiceOrders.OpenServiceOrder;
 using OsService.Application.V1.UseCases.ServiceOrders.SearchServiceOrders;
 using OsService.Application.V1.UseCases.ServiceOrders.UpdateServiceOrderPrice;
+using OsService.Application.V1.UseCases.ServiceOrders.UploadServiceOrderAttachment;
 using OsService.Domain.Enums;
 using static OsService.Application.V1.UseCases.ServiceOrders.ChangeServiceOrderStatus.ChangeServiceOrderStatus;
 
@@ -109,13 +111,68 @@ public sealed class ServiceOrdersController(IMediator mediator) : ControllerBase
         [FromBody] UpdateServiceOrderPrice.UpdateServiceOrderPriceCommand body,
         CancellationToken ct)
     {
-        // garante que o Id vem da rota (e ignora o que vier no JSON)
         var cmd = body with { Id = id };
 
         var result = await mediator.Send(cmd, ct);
         return result.ToActionResult(this);
     }
 
+    /// <summary>
+    /// Anexa uma imagem "antes" do serviço.
+    /// </summary>
+    /// <response code="200">Anexo salvo com sucesso</response>
+    /// <response code="400">Validação inválida ou arquivo ausente</response>
+    /// <response code="404">OS não encontrada</response>
+    [HttpPost("{serviceOrderId:guid}/attachments/before")]
+    public async Task<IActionResult> UploadBefore(
+        Guid serviceOrderId,
+        IFormFile file,
+        CancellationToken ct)
+    {
+        var cmd = new UploadServiceOrderAttachment.Command(
+            ServiceOrderId: serviceOrderId,
+            Type: AttachmentType.Before,
+            File: file);
+
+        var result = await mediator.Send(cmd, ct);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Anexa uma imagem "depois" do serviço.
+    /// </summary>
+    /// <response code="200">Anexo salvo com sucesso</response>
+    /// <response code="400">Validação inválida ou arquivo ausente</response>
+    /// <response code="404">OS não encontrada</response>
+    [HttpPost("{serviceOrderId:guid}/attachments/after")]
+    public async Task<IActionResult> UploadAfter(
+        Guid serviceOrderId,
+        IFormFile file,
+        CancellationToken ct)
+    {
+        var cmd = new UploadServiceOrderAttachment.Command(
+            ServiceOrderId: serviceOrderId,
+            Type: AttachmentType.After,
+            File: file);
+
+        var result = await mediator.Send(cmd, ct);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Lista todos os anexos (antes/depois) de uma OS.
+    /// </summary>
+    /// <response code="200">Lista de anexos</response>
+    /// <response code="404">OS não encontrada</response>
+    [HttpGet("{id:guid}/attachments")]
+    public async Task<IActionResult> GetAttachments(
+        Guid id,
+        CancellationToken ct)
+    {
+        var query = new GetServiceOrderAttachments.Query(id);
+        var result = await mediator.Send(query, ct);
+        return result.ToActionResult(this);
+    }
 
 
 }

@@ -16,7 +16,5 @@ public interface IRepository<TEntity> where TEntity : class
     Task<bool> ExistsAsync(Guid id, CancellationToken ct);
 
     Task<IReadOnlyList<TEntity>> ListAsync(CancellationToken ct);
-    Task<IReadOnlyList<TEntity>> ListAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        CancellationToken ct);
+    Task<IReadOnlyList<TEntity>> ListAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken ct);
 }

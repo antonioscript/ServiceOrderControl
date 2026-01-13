@@ -5,8 +5,7 @@ using OsService.Infrastructure.Databases;
 
 namespace OsService.Infrastructure.Repository;
 
-public sealed class CustomerRepository
-    : EfRepository<CustomerEntity>, ICustomerRepository
+public sealed class CustomerRepository : EfRepository<CustomerEntity>, ICustomerRepository
 {
     private readonly OsServiceDbContext _dbContext;
     public CustomerRepository(OsServiceDbContext dbContext): base(dbContext)
