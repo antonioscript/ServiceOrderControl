@@ -32,7 +32,6 @@ public sealed class CustomersController(IMediator mediator) : ControllerBase
         CancellationToken ct)
     {
         var result = await mediator.Send(cmd, ct);
-
         return result.ToActionResult(this, id => CreatedAtAction(nameof(GetById), new { id }, new { id }));
     }
 
@@ -48,7 +47,7 @@ public sealed class CustomersController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
-        var result = await mediator.Send(new GetCustomerByIdQuery(id), ct);
+        var result = await mediator.Send(new GetCustomerById.Query(id), ct);
         return result.ToActionResult(this);
     }
 
@@ -70,9 +69,7 @@ public sealed class CustomersController(IMediator mediator) : ControllerBase
         [FromQuery] string? document,
         CancellationToken ct)
     {
-        var result = await mediator.Send(
-            new GetCustomerByContactQuery(phone, document), ct);
-
+        var result = await mediator.Send(new GetCustomerByContact.Query(phone, document), ct);
         return result.ToActionResult(this);
     }
 }

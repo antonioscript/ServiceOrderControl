@@ -3,9 +3,6 @@ using MediatR;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.Entities;
 using OsService.Domain.ResultPattern;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OsService.Application.V1.UseCases.ServiceOrders.GetServiceOrderById;
 

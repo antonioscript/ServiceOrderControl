@@ -9,11 +9,11 @@ namespace OsService.Application.V1.UseCases.Customers.CreateCustomer;
 
 public partial class CreateCustomer
 {
-	public sealed class CreateCustomerHandler(
+	public sealed class Handler(
 		ICustomerRepository repo,
 		IUnitOfWork unitOfWork,
 		IMapper mapper,
-        ILogger<CreateCustomerHandler> logger)
+        ILogger<Handler> logger)
 		: IRequestHandler<CreateCustomerCommand, Result<Guid>>
 	{
 		public async Task<Result<Guid>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
