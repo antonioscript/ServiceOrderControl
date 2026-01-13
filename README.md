@@ -195,3 +195,6 @@ Permitir anexar evidências do serviço.
 
 <img width="1291" height="912" alt="image" src="https://github.com/user-attachments/assets/87d2bc18-da99-4fad-aa70-253546656022" />
 
+
+<img width="964" height="547" alt="image" src="https://github.com/user-attachments/assets/fb87deea-315b-45cb-98d0-fca3e92152d2" />
+
