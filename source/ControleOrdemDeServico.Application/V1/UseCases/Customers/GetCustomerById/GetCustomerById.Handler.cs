@@ -2,23 +2,23 @@
 using MediatR;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.ResultPattern;
+using static OsService.Application.V1.UseCases.Customers.GetCustomerById.GetCustomerById;
 
 namespace OsService.Application.V1.UseCases.Customers.GetCustomerById;
 
-//TODO: Transformar em UseCase
 public sealed class GetCustomerByIdHandler(
     ICustomerRepository repo,
     IMapper mapper)
-    : IRequestHandler<GetCustomerByIdQuery, Result<GetCustomerByContactResponse>>
+    : IRequestHandler<Query, Result<Response>>
 {
-    public async Task<Result<GetCustomerByContactResponse>> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Response>> Handle(Query request, CancellationToken cancellationToken)
     {
         var entity = await repo.GetByIdAsync(request.Id, cancellationToken);
 
         if (entity is null)
-            return Result.Failure<GetCustomerByContactResponse>(CustomerErrors.NotFound);
+            return Result.Failure<Response>(CustomerErrors.NotFound);
 
-        var response = mapper.Map<GetCustomerByContactResponse>(entity);
+        var response = mapper.Map<Response>(entity);
         return Result.Success(response);
     }
 }
