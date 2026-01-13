@@ -1,7 +1,28 @@
 # ServiceOrderControl
 
-API para cadastro de clientes e controle de Ordens de Serviço (OS), construída em .NET 8 com foco em **arquitetura em camadas, DDD**, boas práticas de **design orientado a domínio** e um código fácil de evoluir.
+## Notas sobre o desafio
 
+Ao longo do desenvolvimento eu busquei:
+
+- Atender todos os requisitos funcionais principais (clientes, OS, status, valor, anexos opcionais);
+- Revisar e corrigir problemas estruturais de código (arquitetura, acoplamentos, validações);
+- Entregar o projeto sem erros ou warnings de compilação e com análise estática limpa via Sonar;
+- Documentar as decisões de design e os pontos que ficaram como melhorias futuras.
+
+### Como executar o projeto (localmente)
+
+**1. Clonar o Repositório**
+
+ ```bash
+   git clone https://github.com/antonioscript/ServiceOrderControl
+````
+
+**2. Uma instância SQL Server rodando em localhost (Pode ser SQL Server local, Docker ou SQL Express)**
+A connection string padrão está em `src/Apis/OsService.ApiService/appsettings.json`
+
+
+
+----
 
 ### Sumário
 
@@ -35,8 +56,9 @@ issues, ideias, ajustes de arquitetura, validações, logs, Docker, etc.
 > Board completo aqui:  
 > **https://github.com/users/antonioscript/projects/14**
 
+</br>
 <img width="1291" height="912" alt="image" src="https://github.com/user-attachments/assets/87d2bc18-da99-4fad-aa70-253546656022" />
-
+</br>
 
 No board é possível acompanhar:
 
@@ -53,8 +75,9 @@ Também deixei registrados alguns itens que não eram obrigatórios para a entre
 Para garantir a qualidade do código na entrega, usei a extensão do Sonar integrada ao Visual Studio.  
 Ao final do desenvolvimento o relatório indicava nenhum erro ou warning, Atendendo assim ao requisito do desafio de entregar o projetosem erros nem warnings de compilação.
 
+</br>
 <img width="964" height="547" alt="image" src="https://github.com/user-attachments/assets/fb87deea-315b-45cb-98d0-fca3e92152d2" />
-
+</br>
 
 
 
