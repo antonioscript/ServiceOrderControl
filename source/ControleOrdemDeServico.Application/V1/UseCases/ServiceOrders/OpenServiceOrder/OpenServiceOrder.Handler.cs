@@ -9,12 +9,12 @@ namespace OsService.Application.V1.UseCases.ServiceOrders.OpenServiceOrder;
 
 public partial class OpenServiceOrder
 {
-	public sealed class OpenServiceOrderHandler( //TODO: Nome Handler
+	public sealed class Handler( 
 		IServiceOrderRepository serviceOrders,
 		ICustomerRepository customers,
 		IUnitOfWork unitOfWork,
 		IMapper mapper,
-        ILogger<OpenServiceOrderHandler> logger)
+        ILogger<Handler> logger)
 		: IRequestHandler<Command, Result<Response>>
 	{
 		public async Task<Result<Response>> Handle(

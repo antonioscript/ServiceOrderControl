@@ -32,9 +32,7 @@ public partial class UpdateServiceOrderPrice
                 return Result.Failure<Response>(ServiceOrderErrors.PriceChangeNotAllowed);
 
             entity.Price = normalized.Price;
-            entity.Coin = normalized.Price is null
-                ? null
-                : normalized.Coin ?? "BRL"; //TODO
+            entity.Coin = normalized.Price is null ? null : normalized.Coin ?? "BRL"; 
 
             entity.UpdatedPriceAt = DateTime.UtcNow;
 

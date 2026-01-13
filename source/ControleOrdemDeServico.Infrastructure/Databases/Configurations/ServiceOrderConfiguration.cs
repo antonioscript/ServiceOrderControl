@@ -15,9 +15,6 @@ public class ServiceOrderConfiguration : IEntityTypeConfiguration<ServiceOrderEn
         builder.Property(x => x.Id)
             .IsRequired();
 
-        //builder.Property(x => x.Number)
-        //    .ValueGeneratedOnAdd(); //TODO
-
         builder.Property(x => x.Number)
             .UseIdentityColumn(seed: 1000, increment: 1)
             .IsRequired();

@@ -59,7 +59,6 @@ public sealed class ServiceOrdersController(IMediator mediator) : ControllerBase
         return result.ToActionResult(this);
     }
 
-    //TODO: Aqui tem o erro de Enum (pra variar) e possivelmente normalização da data
 
     /// <summary>
     /// Lista ordens de serviço filtrando por cliente, status e/ou período da data de abertura.
