@@ -18,31 +18,6 @@
 
 API para cadastro de clientes e controle de Ordens de Serviço (OS), construída em .NET 8 com foco em **arquitetura em camadas, DDD**, boas práticas de **design orientado a domínio** e um código fácil de evoluir.
 
----
-
-## Sumário
-
-1. [Visão geral](#visão-geral)  
-2. [Stack e principais decisões](#stack-e-principais-decisões)  
-3. [Arquitetura da solução](#arquitetura-da-solução)  
-   1. [Camada Domain](#camada-domain)  
-   2. [Camada Application](#camada-application)  
-   3. [Camada Infrastructure](#camada-infrastructure)  
-   4. [Camada ApiService](#camada-apiservice)  
-   5. [Módulos e composição (IModule)](#módulos-e-composição-imodule)  
-4. [Modelagem de domínio](#modelagem-de-domínio)  
-   1. [Cliente](#cliente)  
-   2. [Ordem de Serviço](#ordem-de-serviço)  
-5. [Fluxos principais da API](#fluxos-principais-da-api)  
-   1. [Clientes](#clientes)  
-   2. [Ordens de Serviço](#ordens-de-serviço)  
-6. [Tratamento de erros e contrato de resposta](#tratamento-de-erros-e-contrato-de-resposta)  
-7. [Observabilidade e qualidade](#observabilidade-e-qualidade)  
-8. [Como executar o projeto](#como-executar-o-projeto)  
-9. [Decisões de design e trade-offs](#decisões-de-design-e-trade-offs)  
-10. [Próximos passos / melhorias possíveis](#próximos-passos--melhorias-possíveis)
-
----
 
 ### Sumário
 
@@ -52,7 +27,7 @@ API para cadastro de clientes e controle de Ordens de Serviço (OS), construída
   - [Camada Application](#camada-application)
   - [Camada Infrastructure](#camada-infrastructure)
   - [Camada ApiService](#camada-apiservice)
-- [Módulos e composição (`IModule`)](#módulos-e-composição-imodule)
+- [Módulos e composição](#módulos-e-composição-imodule)
 - [UseCases](#usecases)
 - [Padrão Mediator](#padrão-mediator)
 - [AutoMapper](#automapper)
