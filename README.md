@@ -276,21 +276,32 @@ O projeto foi construído com foco em:
 
 ---
 
+## Sobre o desenvolvimento do Projeto
+
 ## Arquitetura da solução
 
+
+
+### Arquitetura de Código
+
 Hoje a solução é composta, no backend, por:
+
+A solução backend foi organizada seguindo um modelo **inspirado em DDD e Clean Architecture**, com separação clara entre:
+
 
 - `OsService.Domain`
 - `OsService.Application`
 - `OsService.Infrastructure`
 - `OsService.ApiService`
-- `OsService.ServiceDefaults` (biblioteca de apoio do template Aspire)
+- `OsService.ServiceDefaults`
+
+Além disso, os fluxos seguem um estilo **CQRS por caso de uso** (Commands/Queries + Handlers), o que ajuda a manter cada cenário de negócio pequeno, testável e fácil de evoluir.
+
 
 > Os projetos de visualização (Blazor/Aspire AppHost) que vinham no template foram **removidos** para focar somente no backend do desafio.
+#### Camada Domain
 
-### Camada Domain
-
-> “The Domain layer is completely persistence-agnostic — it only contains business concepts.”
+> “The Domain layer is completely persistence-agnostic, it only contains business concepts.”
 
 A camada **Domain** contém:
 
@@ -298,15 +309,17 @@ A camada **Domain** contém:
 - Enums (`ServiceOrderStatus`)
 - Tipos genéricos de suporte, como `BaseEntity` e o **Result Pattern** (`Result`, `Result<T>`, `Error`).
 
-Ela **não conhece** nada sobre EF Core, repositórios, conexões de banco ou infraestrutura.
+Ela **não conhece** nada sobre EF Core, repositórios, conexões de banco ou infraestrutura. A ideia é manter o domínio “limpo” e estável
 
-### Camada Application
+
+
+#### Camada Application
 
 > “The Application layer defines repository and unit-of-work interfaces as outbound ports, and the Infrastructure layer implements these ports using EF Core.”
 
 Responsável por **casos de uso** e **regras de aplicação**, aqui vivem:
 
-- Interfaces de repositório e Unit of Work  
+- Interfaces de repositório (ou futuros serviços)
   (`ICustomerRepository`, `IServiceOrderRepository`, `IUnitOfWork`, etc.)
 - Casos de uso organizados por **Features/UseCases**  
   Ex.: `Customers.CreateCustomer`, `ServiceOrders.OpenServiceOrder`, etc.
@@ -315,13 +328,13 @@ Responsável por **casos de uso** e **regras de aplicação**, aqui vivem:
   - Um `Handler`
   - E, quando faz sentido, um `Response` específico
 
-> “Na camada de Application eu organizei por Features/UseCases. Cada caso de uso segue CQRS: um Command ou Query, com seu Handler, e, quando faz sentido, um Response específico. A entidade de domínio (CustomerEntity) não é exposta diretamente — eu mapeio via AutoMapper para um modelo de saída (GetCustomerByIdResponse) que fica dentro da própria Feature. Infraestrutura implementa os repositórios e Unit of Work, e a API só conhece os UseCases via MediatR.”
+> “Na camada de Application eu organizei por Features/UseCases. Cada caso de uso segue CQRS: um Command ou Query, com seu Handler, e quando faz sentido, um Response específico. A entidade de domínio (CustomerEntity) não é exposta diretamente, eu mapeio via AutoMapper para um modelo de saída (GetCustomerByIdResponse) que fica dentro da própria Feature. Infraestrutura implementa os repositórios, e a API só conhece os UseCases via MediatR.”
 
-**Importante:**  
+**Observação:**  
 A camada de **Application não referencia mais a camada de Infrastructure**.  
 As interfaces vivem em Application e são implementadas em Infrastructure, mantendo o sentido de dependência correto.
 
-### Camada Infrastructure
+#### Camada Infrastructure
 
 A camada **Infrastructure** implementa as portas definidas em Application:
 
@@ -332,9 +345,9 @@ A camada **Infrastructure** implementa as portas definidas em Application:
   - `ServiceOrderRepository : EfRepository<ServiceOrderEntity>, IServiceOrderRepository`
 - Implementação de `IUnitOfWork`
 
-> Sobre o `EfRepository<TEntity>`: os métodos são **virtuais** justamente para permitir que repositórios específicos sobrescrevam comportamento (ex.: includes, filtros padrão) sem quebrar o contrato base. Isso está documentado no README porque é parte do design do repositório genérico.
+> Sobre o `EfRepository<TEntity>`: os métodos são **virtuais** justamente para permitir que repositórios específicos sobrescrevam comportamento sem quebrar o contrato base.
 
-### Camada ApiService
+#### Camada ApiService
 
 É o projeto ASP.NET Core minimal hosting:
 
@@ -352,7 +365,6 @@ A API **conhece apenas**:
 
 Para manter o `Program.cs` limpo e escalável, foi introduzido um padrão simples de módulos:
 
-> “To keep the composition root clean and scalable, I introduced a simple IModule pattern. Each layer (Application, Infrastructure) exposes a module that implements IModule.ConfigureServices. In Program.cs I just call AddModules, which scans the assemblies for IModule implementations and executes their registrations. This way, when the system grows (more layers, messaging, background jobs, etc.), we only add new modules — the startup code remains small and easy to reason about.”
 
 - `ApplicationModule` registra MediatR e AutoMapper
 - `InfrastructureModule` registra DbContext, repositórios e Unit of Work
@@ -366,5 +378,153 @@ builder.Services.AddModules(
     typeof(ApplicationModule).Assembly,
     typeof(InfrastructureModule).Assembly,
     typeof(ApiServiceModule).Assembly);
+
+## UseCases
+
+Dentro de `OsService.Application` eu organizei a camada de aplicação por **Features / UseCases**, seguindo um estilo de **CQRS por cenário**.  
+Em vez de ter um único `CustomerService` grande, cada caso de uso fica isolado em sua própria pasta.
+
+Exemplo simplificado da estrutura:
+
+```text
+OsService.Application
+ └─ V1
+    └─ UseCases
+       └─ Customers
+          ├─ CreateCustomer
+          │  ├─ CreateCustomer.Command.cs
+          │  ├─ CreateCustomer.Handler.cs
+          │  └─ CreateCustomer.Validator.cs
+          ├─ GetCustomerById
+          └─ GetCustomerByContact
+```
+
+Cada pasta de UseCase representa um cenário de negócio completo.
+No caso de CreateCustomer, por exemplo:
+
+Além disso, os DTOs de resposta (por exemplo, GetCustomerByIdResponse) e os profiles do AutoMapper (CustomerProfile) ficam próximos da Feature. Isso evita perfis genéricos espalhados e deixa claro quem produz e quem consome cada modelo.
+
+Escolhi esse modelo porque a estrutura de pastas reflete a linguagem de domínio, tudo que pertence a determinada feature está junto e também na facilidade de manutenção
+
+
+### Padrão Mediator
+
+Para orquestrar os UseCases a partir da API, utilizei o **MediatR**, uma implementação do padrão **Mediator**.
+
+Em vez de o Controller conhecer diretamente repositórios, serviços de domínio ou infraestrutura, ele conhece apenas um **IMediator** e envia um `Command` ou `Query`:
+
+O MediatR é responsável por localizar o Handler correto para aquele Command/Query, executar o fluxo de negócio e devolver um Result<T> para o Controller.
+
+Com isso, a camada da API, por exemplo, não precisa saber como o caso de uso é implementado, apenas qual comando enviar.
+Isso reduz o risco de referências cruzadas indevidas (ex.: Controllers chamando repositórios diretamente). E não apenas por isso, evita também o caso de dependências circulaes, quando um serviço chama outro serviço, etc. 
+
+E também O padrão Mediator conversa muito bem com a ideia de Commands/Queries separados, reforçando a separação entre operações de escrita e leitura.
+
+
+
+## AutoMapper
+
+Para evitar mapeamentos manuais espalhados pelo código, utilizei o **AutoMapper** para transformar:
+
+- Entidades de domínio → DTOs de resposta da API  
+- Commands → Entidades de domínio (na criação de cliente, OS, etc.)
+
+A ideia é simples:
+
+- O domínio continua falando a “linguagem da regra de negócio” (`CustomerEntity`, `ServiceOrderEntity`, etc.);
+- A API pode expor modelos de saída específicos para cada caso de uso (`GetCustomerByIdResponse`, `GetServiceOrderByIdResponse`, etc.), sem acoplar diretamente à entidade.
+
+Os **profiles** (`CustomerProfile`, `ServiceOrderProfile`, etc.) ficam próximos das Features / UseCases, o que ajuda a:
+
+- Evitar perfis genéricos gigantes;
+- Deixar explícito qual caso de uso usa qual mapeamento;
+- Diminuir código repetitivo de “atribuição de propriedade” (mapping manual).
+
+Isso torna o código mais enxuto e reduz a chance de erros ao adicionar novos campos ou evoluir o modelo de saída.
+
+
+## Padrão Result
+
+Para modelar sucesso e erro de forma explícita, a solução utiliza um **Result Pattern**, com os tipos:
+
+- `Result` e `Result<T>`
+- `Error` (contendo `Code`, `Message` e `StatusCode`)
+
+Em vez de lançar exceções para qualquer falha de regra de negócio, os casos de uso retornam:
+
+- `Result.Success(...)` quando tudo ocorre bem;
+- `Result.Failure(...)` com um `Error` específico quando algo dá errado  
+  (ex.: `CustomerErrors.NameRequired`, `ServiceOrderErrors.InvalidStatusTransition`, etc.).
+
+Na camada de API, uma extensão (`ResultExtensions.ToActionResult`) converte esse `Result<T>` em uma resposta HTTP padronizada, incluindo:
+
+- `isSuccess`
+- `data` (quando sucesso)
+- `error.code` e `error.message` (quando falha)
+
+Com isso, quem consome a API recebe um contrato consistente, e o código de aplicação:
+
+- Fica mais legível (fluxo de sucesso/erro explícito);
+- Evita o uso de exceções como controle de fluxo;
+- Centraliza a tradução de erros de domínio/aplicação para HTTP.
+
+## Padronização de respostas HTTP (Result → IActionResult)
+
+Para evitar `if`/`else` repetidos em todos os controllers, a API expõe um método de extensão que converte o `Result<T>` da camada de aplicação em um `IActionResult` padronizado. Existindo assim também uma espécie de dicionário de tipos de erros onde são atrelados automaticamente para o status correto
+
+```csharp
+public sealed record Error(string Code, string Message, HttpStatusCode StatusCode)
+{
+    public static Error Validation(string code, string message) =>
+        new(code, message, HttpStatusCode.BadRequest);
+
+    public static Error Conflict(string code, string message) =>
+        new(code, message, HttpStatusCode.Conflict);
+
+    public static Error NotFound(string code, string message) =>
+        new(code, message, HttpStatusCode.NotFound);
+
+    public static Error Unexpected(string code, string message) =>
+        new(code, message, HttpStatusCode.InternalServerError);
+
+    public static readonly Error None =
+        new("None", string.Empty, HttpStatusCode.OK);
+}
+```
+
+
+
+A lógica de tradução de resultado de domínio → resposta HTTP fica concentrada em um único lugar. Onde as respostas ficam nesse formato: 
+
+```json
+
+{
+  "isSuccess": true,
+  "data": { ... }
+}
+
+// Erro
+{
+  "isSuccess": false,
+  "error": {
+    "code": "ServiceOrder.CustomerRequired",
+    "message": "Id do cliente é obrigatório."
+  }
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
