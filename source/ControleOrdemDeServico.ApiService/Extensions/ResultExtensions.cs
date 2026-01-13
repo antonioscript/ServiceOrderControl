@@ -3,32 +3,19 @@ using OsService.Domain.ResultPattern;
 
 namespace OsService.ApiService.Extensions;
 
+/// <summary>
+/// Métodos de extensão para converter instâncias de retorno
+/// </summary>
 public static class ResultExtensions
 {
-    //public static IActionResult ToActionResult<T>(
-    //    this Result<T> result,
-    //    ControllerBase controller,
-    //    Func<T, IActionResult>? onSuccess = null)
-    //{
-    //    if (result.IsSuccess)
-    //    {
-    //        if (onSuccess is not null)
-    //            return onSuccess(result.Data);
-
-    //        return controller.Ok(result.Data);
-    //    }
-
-    //    var error = result.Error;
-
-    //    var body = new
-    //    {
-    //        code = error.Code,
-    //        message = error.Message
-    //    };
-
-    //    return controller.StatusCode((int)error.StatusCode, body);
-    //}
-
+    /// <summary>
+    /// Conversão de status
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="controller"></param>
+    /// <param name="onSuccess"></param>
+    /// <returns></returns>
     public static IActionResult ToActionResult<T>(
     this Result<T> result,
     ControllerBase controller,

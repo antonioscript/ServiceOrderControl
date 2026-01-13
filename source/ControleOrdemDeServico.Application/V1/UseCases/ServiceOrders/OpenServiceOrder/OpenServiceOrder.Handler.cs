@@ -50,12 +50,7 @@ public partial class OpenServiceOrder
                 return Result.Failure<Response>(ServiceOrderErrors.CustomerNotFound);
             }
 				
-
 			var entity = mapper.Map<ServiceOrderEntity>(normalized);
-
-			//TODO
-			//entity.Status = ServiceOrderStatus.Open;
-			//entity.OpenedAt = DateTime.UtcNow;
 
 			await serviceOrders.AddAsync(entity, cancellationToken);
 			await unitOfWork.CommitAsync(cancellationToken);
