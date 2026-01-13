@@ -20,11 +20,14 @@ public partial class SearchServiceOrders
             if (validation.IsFailure)
                 return Result.Failure<IReadOnlyList<Response>>(validation.Error);
 
+            DateTime? start = request.StartDate?.Date;                 
+            DateTime? endExclusive = request.EndDate?.Date.AddDays(1);
+
             var list = await serviceOrders.ListAsync(so =>
                     (!request.CustomerId.HasValue || so.CustomerId == request.CustomerId.Value) &&
                     (!request.Status.HasValue || so.Status == request.Status.Value) &&
-                    (!request.StartDate.HasValue || so.OpenedAt >= request.StartDate.Value) &&
-                    (!request.EndDate.HasValue || so.OpenedAt <= request.EndDate.Value),
+                    (!start.HasValue || so.OpenedAt >= start.Value) &&
+                    (!endExclusive.HasValue || so.OpenedAt < endExclusive.Value),
                 cancellationToken);
 
             var response = mapper.Map<IReadOnlyList<Response>>(list);

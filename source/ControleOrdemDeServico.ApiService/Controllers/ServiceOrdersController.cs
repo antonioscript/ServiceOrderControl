@@ -38,7 +38,7 @@ public sealed class ServiceOrdersController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(cmd, ct);
 
-        return result.ToActionResult(this, so => Created($"/v1/service-orders/{so.Id}", so)); //TODO: Trocar por aquele que pega o ID
+        return result.ToActionResult(this, so => Created($"/v1/service-orders/{so.Id}", so)); 
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public sealed class ServiceOrdersController(IMediator mediator) : ControllerBase
     //TODO: Aqui tem o erro de Enum (pra variar) e possivelmente normalização da data
 
     /// <summary>
-    /// Lista ordens de serviço filtrando por cliente, status e/ou período.
+    /// Lista ordens de serviço filtrando por cliente, status e/ou período da data de abertura.
     /// </summary>
     /// <param name="query">
     /// Objeto de consulta contendo os filtros de pesquisa

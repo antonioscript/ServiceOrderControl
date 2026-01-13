@@ -1,9 +1,7 @@
-
-using Microsoft.OpenApi;
 using OsService.ApiService.Extensions;
-using OsService.Application; 
-using OsService.Infrastructure;                      
-using OsService.ServiceDefaults.DependencyInjection; 
+using OsService.Application;
+using OsService.Infrastructure;
+using OsService.ServiceDefaults.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
