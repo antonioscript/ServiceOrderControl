@@ -21,6 +21,7 @@ API para cadastro de clientes e controle de Ordens de Serviço (OS), construída
 
 ### Sumário
 
+- [Sobre o desenvolvimento do Projeto](#sobre-o-desenvolvimento-do-Projeto)
 - [Arquitetura da solução](#arquitetura-da-solução)
 - [Arquitetura de Código](#arquitetura-de-código)
   - [Camada Domain](#camada-domain)
