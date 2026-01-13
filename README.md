@@ -182,6 +182,7 @@ builder.Services.AddModules(
     typeof(ApplicationModule).Assembly,
     typeof(InfrastructureModule).Assembly,
     typeof(ApiServiceModule).Assembly);
+```
 
 ### UseCases
 
