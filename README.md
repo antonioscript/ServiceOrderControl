@@ -393,7 +393,6 @@ Embora Dapper seja excelente para cenários de alta performance e consultas mais
 - **Proteção adicional contra SQL Injection**  
   Tanto EF Core quanto Dapper permitem uso seguro com parâmetros, mas com EF Core:
   - o uso de parâmetros é o padrão;
-  - é menos provável que apareçam `string.Concat`/`$"SELECT ... WHERE {valor}"` soltos no código.
 
 - **Configuração centralizada do modelo**  
   Em vez de “configurar o banco” via SQL manual, o modelo é configurado em ****classes de configuração**** (ou no próprio `DbContext`), definindo:
