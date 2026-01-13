@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.Enums;
 using OsService.Domain.ResultPattern;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OsService.Application.V1.UseCases.ServiceOrders.ChangeServiceOrderStatus;
 
@@ -14,31 +12,59 @@ public partial class ChangeServiceOrderStatus
     public sealed class Handler(
         IServiceOrderRepository serviceOrders,
         IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<Handler> logger)
         : IRequestHandler<ChangeServiceOrderCommand, Result<Response>>
     {
         public async Task<Result<Response>> Handle(
             ChangeServiceOrderCommand request,
             CancellationToken ct)
         {
-            // 1) Validação básica
+            logger.LogInformation(
+                "Iniciando mudança de status da OS. ServiceOrderId={ServiceOrderId}, NewStatus={NewStatus}",
+                request.Id,
+                request.NewStatus);
+
             var primitive = ValidatePrimitiveRules(request);
             if (primitive.IsFailure)
-                return Result.Failure<Response>(primitive.Error);
+            {
+                logger.LogWarning(
+                    "Falha de validação ao mudar status da OS. ServiceOrderId={ServiceOrderId}, Code={Code}, Message={Message}",
+                    request.Id,
+                    primitive.Error.Code,
+                    primitive.Error.Message);
 
-            // 2) Carrega OS
+                return Result.Failure<Response>(primitive.Error);
+            }
+                
+
             var entity = await serviceOrders.GetByIdAsync(request.Id, ct);
             if (entity is null)
-                return Result.Failure<Response>(ServiceOrderErrors.NotFound);
+            {
+                logger.LogWarning(
+                    "Tentativa de mudar status de OS inexistente. ServiceOrderId={ServiceOrderId}",
+                    request.Id);
 
-            // 3) Valida transição de status (inclui regra 2.4 para finalizar)
+                return Result.Failure<Response>(ServiceOrderErrors.NotFound);
+            }
+                
+
             var transition = ValidateTransition(entity, request.NewStatus);
             if (transition.IsFailure)
+            {
+                logger.LogWarning(
+                    "Transição de status inválida. ServiceOrderId={ServiceOrderId}, From={From}, To={To}, Code={Code}",
+                    entity.Id,
+                    entity.Status,
+                    request.NewStatus,
+                    transition.Error.Code);
+
                 return Result.Failure<Response>(transition.Error);
+            }
+                
 
             var now = DateTime.UtcNow;
 
-            // 4) Atualiza datas de ciclo
             if (entity.Status == ServiceOrderStatus.Open &&
                 request.NewStatus == ServiceOrderStatus.InProgress &&
                 entity.StartedAt is null)
@@ -53,11 +79,14 @@ public partial class ChangeServiceOrderStatus
                 entity.FinishedAt = now;
             }
 
-            // 5) Atualiza status
             entity.Status = request.NewStatus;
 
-            //await serviceOrders.UpdateAsync(entity, ct);
             await unitOfWork.CommitAsync(ct);
+
+            logger.LogInformation(
+                "Status da OS atualizado com sucesso. ServiceOrderId={ServiceOrderId}, NewStatus={NewStatus}",
+                entity.Id,
+                entity.Status);
 
             var response = mapper.Map<Response>(entity);
             return Result.Success(response);
