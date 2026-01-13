@@ -198,3 +198,173 @@ Permitir anexar evidências do serviço.
 
 <img width="964" height="547" alt="image" src="https://github.com/user-attachments/assets/fb87deea-315b-45cb-98d0-fca3e92152d2" />
 
+
+
+
+-------------------
+
+
+# ServiceOrderControl
+
+API para cadastro de clientes e controle de Ordens de Serviço (OS), construída em .NET 8 com foco em **arquitetura em camadas, DDD**, boas práticas de **design orientado a domínio** e um código fácil de evoluir.
+
+---
+
+## Sumário
+
+1. [Visão geral](#visão-geral)  
+2. [Stack e principais decisões](#stack-e-principais-decisões)  
+3. [Arquitetura da solução](#arquitetura-da-solução)  
+   1. [Camada Domain](#camada-domain)  
+   2. [Camada Application](#camada-application)  
+   3. [Camada Infrastructure](#camada-infrastructure)  
+   4. [Camada ApiService](#camada-apiservice)  
+   5. [Módulos e composição (IModule)](#módulos-e-composição-imodule)  
+4. [Modelagem de domínio](#modelagem-de-domínio)  
+   1. [Cliente](#cliente)  
+   2. [Ordem de Serviço](#ordem-de-serviço)  
+5. [Fluxos principais da API](#fluxos-principais-da-api)  
+   1. [Clientes](#clientes)  
+   2. [Ordens de Serviço](#ordens-de-serviço)  
+6. [Tratamento de erros e contrato de resposta](#tratamento-de-erros-e-contrato-de-resposta)  
+7. [Observabilidade e qualidade](#observabilidade-e-qualidade)  
+8. [Como executar o projeto](#como-executar-o-projeto)  
+9. [Decisões de design e trade-offs](#decisões-de-design-e-trade-offs)  
+10. [Próximos passos / melhorias possíveis](#próximos-passos--melhorias-possíveis)
+
+---
+
+## Visão geral
+
+O **ServiceOrderControl** é uma API responsável por:
+
+- Cadastrar **clientes**;
+- Abrir **ordens de serviço** vinculadas a clientes;
+- Atualizar o **status** de uma OS (ex.: Aberta, Em execução, Finalizada);
+- Atualizar o **valor** da OS;
+- Anexar imagens de **antes/depois** do serviço na OS;
+- Consultar OS por **id**, **cliente**, **status** e/ou **período de abertura**.
+
+O projeto foi construído com foco em:
+
+- **Separação clara de responsabilidades** (DDD + camadas);
+- **Facilidade de manutenção** (handlers por caso de uso, Result Pattern);
+- **Observabilidade e tratativa de erros** coerente para quem consome a API;
+- Código pronto para crescer (mais módulos, mensageria, background jobs, etc).
+
+---
+
+## Stack e principais decisões
+
+- **Linguagem / Runtime**
+  - .NET 8
+  - C# com **construtor primário** em controllers e handlers para DI mais enxuta.
+- **Persistência**
+  - SQL Server
+  - **Entity Framework Core** (migração do Dapper para EF Core)
+- **Arquitetura**
+  - DDD com camadas: **Domain**, **Application**, **Infrastructure**, **ApiService**
+  - CQRS por Feature: **Command/Query + Handler + Response**
+  - Padrão de composição via **`IModule`** (AddModules)
+- **Infra cross-cutting**
+  - MediatR para orquestrar UseCases a partir da API
+  - AutoMapper para mapear entidades de domínio para DTOs de resposta
+  - Result Pattern (`Result<T>`, `Error`) para modelar sucesso/erro
+  - SonarQube/SonarLint para análise estática
+  - Global Exception Handler + ProblemDetails (RFC 7807)
+  - Swagger/Scalar com documentação em PT-BR
+
+---
+
+## Arquitetura da solução
+
+Hoje a solução é composta, no backend, por:
+
+- `OsService.Domain`
+- `OsService.Application`
+- `OsService.Infrastructure`
+- `OsService.ApiService`
+- `OsService.ServiceDefaults` (biblioteca de apoio do template Aspire)
+
+> Os projetos de visualização (Blazor/Aspire AppHost) que vinham no template foram **removidos** para focar somente no backend do desafio.
+
+### Camada Domain
+
+> “The Domain layer is completely persistence-agnostic — it only contains business concepts.”
+
+A camada **Domain** contém:
+
+- Entidades de domínio (`CustomerEntity`, `ServiceOrderEntity`, etc.)
+- Enums (`ServiceOrderStatus`)
+- Tipos genéricos de suporte, como `BaseEntity` e o **Result Pattern** (`Result`, `Result<T>`, `Error`).
+
+Ela **não conhece** nada sobre EF Core, repositórios, conexões de banco ou infraestrutura.
+
+### Camada Application
+
+> “The Application layer defines repository and unit-of-work interfaces as outbound ports, and the Infrastructure layer implements these ports using EF Core.”
+
+Responsável por **casos de uso** e **regras de aplicação**, aqui vivem:
+
+- Interfaces de repositório e Unit of Work  
+  (`ICustomerRepository`, `IServiceOrderRepository`, `IUnitOfWork`, etc.)
+- Casos de uso organizados por **Features/UseCases**  
+  Ex.: `Customers.CreateCustomer`, `ServiceOrders.OpenServiceOrder`, etc.
+- Cada UseCase segue CQRS:
+  - Um `Command` ou `Query`
+  - Um `Handler`
+  - E, quando faz sentido, um `Response` específico
+
+> “Na camada de Application eu organizei por Features/UseCases. Cada caso de uso segue CQRS: um Command ou Query, com seu Handler, e, quando faz sentido, um Response específico. A entidade de domínio (CustomerEntity) não é exposta diretamente — eu mapeio via AutoMapper para um modelo de saída (GetCustomerByIdResponse) que fica dentro da própria Feature. Infraestrutura implementa os repositórios e Unit of Work, e a API só conhece os UseCases via MediatR.”
+
+**Importante:**  
+A camada de **Application não referencia mais a camada de Infrastructure**.  
+As interfaces vivem em Application e são implementadas em Infrastructure, mantendo o sentido de dependência correto.
+
+### Camada Infrastructure
+
+A camada **Infrastructure** implementa as portas definidas em Application:
+
+- `OsServiceDbContext` com EF Core
+- `EfRepository<TEntity>` (repositório genérico com métodos **virtuais**)
+- Implementações concretas:
+  - `CustomerRepository : EfRepository<CustomerEntity>, ICustomerRepository`
+  - `ServiceOrderRepository : EfRepository<ServiceOrderEntity>, IServiceOrderRepository`
+- Implementação de `IUnitOfWork`
+
+> Sobre o `EfRepository<TEntity>`: os métodos são **virtuais** justamente para permitir que repositórios específicos sobrescrevam comportamento (ex.: includes, filtros padrão) sem quebrar o contrato base. Isso está documentado no README porque é parte do design do repositório genérico.
+
+### Camada ApiService
+
+É o projeto ASP.NET Core minimal hosting:
+
+- `Program.cs` como Composition Root
+- Controllers
+- Registradores de serviços comuns (Swagger, ProblemDetails, ExceptionHandler)
+- Conversão de `Result<T>` em `IActionResult`
+
+A API **conhece apenas**:
+
+- As interfaces da camada Application (via DI)
+- Os `Command`/`Query` e manda tudo via MediatR
+
+### Módulos e composição (`IModule`)
+
+Para manter o `Program.cs` limpo e escalável, foi introduzido um padrão simples de módulos:
+
+> “To keep the composition root clean and scalable, I introduced a simple IModule pattern. Each layer (Application, Infrastructure) exposes a module that implements IModule.ConfigureServices. In Program.cs I just call AddModules, which scans the assemblies for IModule implementations and executes their registrations. This way, when the system grows (more layers, messaging, background jobs, etc.), we only add new modules — the startup code remains small and easy to reason about.”
+
+- `ApplicationModule` registra MediatR e AutoMapper
+- `InfrastructureModule` registra DbContext, repositórios e Unit of Work
+- `ApiServiceModule` (conceito) registra controllers, ProblemDetails, ExceptionHandler, OpenAPI
+
+O `Program.cs` apenas chama:
+
+```csharp
+builder.Services.AddModules(
+    builder.Configuration,
+    typeof(ApplicationModule).Assembly,
+    typeof(InfrastructureModule).Assembly,
+    typeof(ApiServiceModule).Assembly);
+
+
