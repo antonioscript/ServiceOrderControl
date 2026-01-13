@@ -19,7 +19,7 @@ public partial class OpenServiceOrder
 	{
 		public async Task<Result<Response>> Handle(
 			Command request,
-			CancellationToken ct)
+			CancellationToken cancellationToken)
 		{
             logger.LogInformation(
                 "Iniciando abertura de OS. CustomerId={CustomerId}, Price={Price}",
@@ -40,7 +40,7 @@ public partial class OpenServiceOrder
             }
 				
 
-			var customerExists = await customers.ExistsAsync(normalized.CustomerId, ct);
+			var customerExists = await customers.ExistsAsync(normalized.CustomerId, cancellationToken);
 			if (!customerExists)
 			{
                 logger.LogWarning(
@@ -57,8 +57,8 @@ public partial class OpenServiceOrder
 			//entity.Status = ServiceOrderStatus.Open;
 			//entity.OpenedAt = DateTime.UtcNow;
 
-			await serviceOrders.AddAsync(entity, ct);
-			await unitOfWork.CommitAsync(ct);
+			await serviceOrders.AddAsync(entity, cancellationToken);
+			await unitOfWork.CommitAsync(cancellationToken);
 
             logger.LogInformation(
                 "OS aberta com sucesso. ServiceOrderId={ServiceOrderId}, Number={Number}, CustomerId={CustomerId}",

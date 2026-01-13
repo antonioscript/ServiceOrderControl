@@ -16,35 +16,29 @@ public partial class UpdateServiceOrderPrice
     {
         public async Task<Result<Response>> Handle(
             UpdateServiceOrderPriceCommand request,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
-            // 1) Normaliza
             var normalized = Normalize(request);
 
-            // 2) Validação primária
             var primitive = ValidatePrimitiveRules(normalized);
             if (primitive.IsFailure)
                 return Result.Failure<Response>(primitive.Error);
 
-            // 3) Carrega OS
-            var entity = await serviceOrders.GetByIdAsync(normalized.Id, ct);
+            var entity = await serviceOrders.GetByIdAsync(normalized.Id, cancellationToken);
             if (entity is null)
                 return Result.Failure<Response>(ServiceOrderErrors.NotFound);
 
-            // 4) Regra de negócio:
-            //    - Após Finalizada, não permitir alteração
             if (entity.Status == ServiceOrderStatus.Finished)
                 return Result.Failure<Response>(ServiceOrderErrors.PriceChangeNotAllowed);
 
-            // 5) Valor pode ser nulo enquanto Aberta ou Em Execução
             entity.Price = normalized.Price;
             entity.Coin = normalized.Price is null
                 ? null
-                : normalized.Coin ?? "BRL";
+                : normalized.Coin ?? "BRL"; //TODO
 
             entity.UpdatedPriceAt = DateTime.UtcNow;
 
-            await unitOfWork.CommitAsync(ct);
+            await unitOfWork.CommitAsync(cancellationToken);
 
             var response = mapper.Map<Response>(entity);
             return Result.Success(response);

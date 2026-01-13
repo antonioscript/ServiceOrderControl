@@ -18,12 +18,12 @@ public partial class GetServiceOrderById
     {
         public async Task<Result<Response>> Handle(
             Query request,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
             if (request.Id == Guid.Empty)
                 return Result.Failure<Response>(ServiceOrderErrors.IdRequired);
 
-            ServiceOrderEntity? entity = await serviceOrders.GetByIdAsync(request.Id, ct);
+            ServiceOrderEntity? entity = await serviceOrders.GetByIdAsync(request.Id, cancellationToken);
 
             if (entity is null)
                 return Result.Failure<Response>(ServiceOrderErrors.NotFound);

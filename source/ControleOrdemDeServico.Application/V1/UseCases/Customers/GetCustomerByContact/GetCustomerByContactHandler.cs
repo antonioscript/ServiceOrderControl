@@ -16,7 +16,7 @@ public sealed class GetCustomerByContactHandler(
 {
     public async Task<Result<GetCustomerByContactResponse>> Handle(
         GetCustomerByContactQuery request,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         var normalized = Normalize(request);
 
@@ -24,7 +24,7 @@ public sealed class GetCustomerByContactHandler(
         if (validation.IsFailure)
             return Result.Failure<GetCustomerByContactResponse>(validation.Error);
 
-        var entity = await FindByContactAsync(normalized, repo, ct);
+        var entity = await FindByContactAsync(normalized, repo, cancellationToken);
 
         if (entity is null)
             return Result.Failure<GetCustomerByContactResponse>(CustomerErrors.NotFound);

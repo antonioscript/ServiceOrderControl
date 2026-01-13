@@ -13,9 +13,6 @@ public sealed class AttachmentEntity : BaseEntity
     public string ContentType { get; init; } = default!;
     public long SizeBytes { get; init; }
 
-    /// <summary>
-    /// Caminho físico do arquivo (ex.: /data/uploads/{osId}/before/xxx.jpg)
-    /// </summary>
     public string StoragePath { get; init; } = default!;
 
     public DateTime UploadedAt { get; init; }

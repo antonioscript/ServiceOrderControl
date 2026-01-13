@@ -6,7 +6,6 @@ public partial class SearchServiceOrders
 {
     private static Result ValidatePrimitiveRules(Query request)
     {
-        // Pelo menos um filtro tem que vir preenchido
         if (!request.CustomerId.HasValue &&
             !request.Status.HasValue &&
             !request.StartDate.HasValue &&
@@ -15,7 +14,6 @@ public partial class SearchServiceOrders
             return Result.Failure(ServiceOrderErrors.SearchCriteriaRequired);
         }
 
-        // Se veio período completo, from <= to
         if (request.StartDate.HasValue && request.EndDate.HasValue &&
             request.StartDate.Value > request.EndDate.Value)
         {

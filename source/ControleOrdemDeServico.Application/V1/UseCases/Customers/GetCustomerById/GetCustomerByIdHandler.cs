@@ -11,9 +11,9 @@ public sealed class GetCustomerByIdHandler(
     IMapper mapper)
     : IRequestHandler<GetCustomerByIdQuery, Result<GetCustomerByContactResponse>>
 {
-    public async Task<Result<GetCustomerByContactResponse>> Handle(GetCustomerByIdQuery request, CancellationToken ct)
+    public async Task<Result<GetCustomerByContactResponse>> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
     {
-        var entity = await repo.GetByIdAsync(request.Id, ct);
+        var entity = await repo.GetByIdAsync(request.Id, cancellationToken);
 
         if (entity is null)
             return Result.Failure<GetCustomerByContactResponse>(CustomerErrors.NotFound);

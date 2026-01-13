@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using OsService.Domain.ResultPattern;
 using System.Buffers;
-using System.Text.RegularExpressions;
 
 namespace OsService.Application.V1.UseCases.ServiceOrders.UploadServiceOrderAttachment;
 
@@ -81,7 +80,6 @@ public partial class UploadServiceOrderAttachment
 
     private static bool IsValidSignature(byte[] header, int read, string ext)
     {
-        // JPEG: FF D8 FF
         if (ext is ".jpg" or ".jpeg")
         {
             return read >= 3 &&
@@ -90,7 +88,6 @@ public partial class UploadServiceOrderAttachment
                    header[2] == 0xFF;
         }
 
-        // PNG: 89 50 4E 47 0D 0A 1A 0A
         if (ext is ".png")
         {
             return read >= 8 &&
