@@ -227,7 +227,7 @@ E também O padrão Mediator conversa muito bem com a ideia de Commands/Queries 
 
 
 
-## AutoMapper
+### AutoMapper
 
 Para evitar mapeamentos manuais espalhados pelo código, utilizei o **AutoMapper** para transformar:
 
@@ -248,7 +248,7 @@ Os **profiles** (`CustomerProfile`, `ServiceOrderProfile`, etc.) ficam próximos
 Isso torna o código mais enxuto e reduz a chance de erros ao adicionar novos campos ou evoluir o modelo de saída.
 
 
-## Padrão Result
+### Padrão Result
 
 Para modelar sucesso e erro de forma explícita, a solução utiliza um **Result Pattern**, com os tipos:
 
@@ -273,7 +273,7 @@ Com isso, quem consome a API recebe um contrato consistente, e o código de apli
 - Evita o uso de exceções como controle de fluxo;
 - Centraliza a tradução de erros de domínio/aplicação para HTTP.
 
-## Padronização de respostas HTTP (Result → IActionResult)
+### Padronização de respostas HTTP (Result → IActionResult)
 
 Para evitar `if`/`else` repetidos em todos os controllers, a API expõe um método de extensão que converte o `Result<T>` da camada de aplicação em um `IActionResult` padronizado. Existindo assim também uma espécie de dicionário de tipos de erros onde são atrelados automaticamente para o status correto
 
@@ -319,13 +319,13 @@ A lógica de tradução de resultado de domínio → resposta HTTP fica concentr
 
 ```
 
-## GlobalExceptionHandler
+### GlobalExceptionHandler
 
 Para tratar exceções não previstas de forma centralizada, a API registra um `GlobalExceptionHandler`. 
 
 Exceções inesperadas (null reference, falha de IO, etc.) caem no GlobalExceptionHandler, que rgistra o erro em log e retorna uma resposta no formato ProblemDetails, com status apropriado( 500). Em vez de cada controller tentar tratar qualque exceção, existe um lugar específico responsável por isso. Isso reduz duplicação e risco de tratamento inconsistente.
 
-## Padrão Unit of Work
+### Padrão Unit of Work
 
 Para coordenar o commit das alterações no banco de forma consistente, a camada de infraestrutura expõe uma implementação de **Unit of Work** baseada no Context. 
 
@@ -342,7 +342,7 @@ Isso permite que várias operações de escrita (commands), sejam consolidadas e
 
 
 
-## Padrão Repository
+### Padrão Repository
 
 
 Para encapsular o acesso ao banco de dados e evitar que a camada de domínio/aplicação precise falar diretamente com EF Core, foi implementado um repositório genérico ``IRepository<TEntity>```
@@ -373,7 +373,7 @@ E é utilizado o **AsNoTracking** nas consultas de leitura, para melhorar perfor
 
 
 
-## ORM Entity Framework Core
+### ORM Entity Framework Core
 
 Inicialmente o código utilizava **Dapper** para acesso a dados.  
 Para este desafio, optei por utilizar o **Entity Framework Core** como ORM principal, trabalhando diretamente com entidades de domínio (CustomerEntity, ServiceOrderEntity, etc.) em vez de montar e executar SQL manual.
