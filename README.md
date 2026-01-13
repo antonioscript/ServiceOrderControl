@@ -350,15 +350,95 @@ Isso permite que várias operações de escrita (commands), sejam consolidadas e
 ## Padrão Repository
 
 
-
 Para encapsular o acesso ao banco de dados e evitar que a camada de domínio/aplicação precise falar diretamente com EF Core, foi implementado um repositório genérico ``IRepository<TEntity>```
 
+``` csharp
+public interface IRepository<TEntity> where TEntity : class
+{
+    Task<TEntity?> GetByIdAsync(Guid id, CancellationToken ct);
+
+    Task AddAsync(TEntity entity, CancellationToken ct);
+
+    Task UpdateAsync(TEntity entity, CancellationToken ct);
+
+    Task RemoveAsync(TEntity entity, CancellationToken ct);
+
+    Task<bool> ExistsAsync(Guid id, CancellationToken ct);
+
+    Task<IReadOnlyList<TEntity>> ListAsync(CancellationToken ct);
+    Task<IReadOnlyList<TEntity>> ListAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken ct);
+}
+```
 
 Ela abstrai operações básicas (GetByIdAsync, AddAsync, UpdateAsync, RemoveAsync, ListAsync) para qualquer entidade (TEntity).
 
 Os métodos são virtuais, permitindo que repositórios específicos (como CustomerRepository, ServiceOrderRepository) sobrescrevam comportamento quando precisarem de queries mais ricas.
 
 E é utilizado o **AsNoTracking** nas consultas de leitura, para melhorar performance em cenários onde não é necessário rastreamento de mudanças.
+
+
+
+## ORM Entity Framework Core
+
+Inicialmente o código utilizava **Dapper** para acesso a dados.  
+Para este desafio, optei por utilizar o **Entity Framework Core** como ORM principal, trabalhando diretamente com entidades de domínio (CustomerEntity, ServiceOrderEntity, etc.) em vez de montar e executar SQL manual.
+
+Embora Dapper seja excelente para cenários de alta performance e consultas mais específicas, para este contexto o EF Core traz algumas vantagens importantes:
+
+- **Trabalho direto com entidades**  
+  O fluxo do código fica orientado a objetos: criar uma OS significa instanciar um `ServiceOrderEntity` e persistir via repositório, em vez de montar um `INSERT` manual.
+
+- **Menos SQL “espalhado” no código**  
+  As consultas passam a ser escritas em **LINQ**, fortemente tipadas, em cima do `DbSet<TEntity>`.  
+  Isso reduz:
+  - duplicação de comandos SQL,
+  - risco de erros de sintaxe,
+  - necessidade de manter arquivos `.sql` dentro da solução.
+
+- **Proteção adicional contra SQL Injection**  
+  Tanto EF Core quanto Dapper permitem uso seguro com parâmetros, mas com EF Core:
+  - o uso de parâmetros é o padrão;
+  - é menos provável que apareçam `string.Concat`/`$"SELECT ... WHERE {valor}"` soltos no código.
+
+- **Configuração centralizada do modelo**  
+  Em vez de “configurar o banco” via SQL manual, o modelo é configurado em ****classes de configuração**** (ou no próprio `DbContext`), definindo:
+  - chaves primárias,
+  - tipos de coluna,
+  - tamanhos máximos,
+  - relacionamentos, etc.
+
+Isso deixa claro que o banco é um reflexo do modelo de domínio, e não o contrário.
+
+A criação do banco também ficou mais simples com o uso do EF Core.  
+Foi criada uma classe `DatabaseGenerantor` que delega essa responsabilidade para o próprio `DbContext`:
+
+```csharp
+namespace OsService.Infrastructure.Databases;
+
+public class DatabaseGenerantor
+{
+    private readonly OsServiceDbContext _dbContext;
+
+    public DatabaseGenerantor(OsServiceDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public Task EnsureCreatedAsync(CancellationToken ct)
+    {
+        return _dbContext.Database.EnsureCreatedAsync(ct);
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
