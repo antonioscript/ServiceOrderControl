@@ -56,6 +56,6 @@ public static class ServiceOrderErrors
         Error.Validation("Attachment.InvalidExtension", "File extension must be .jpg, .jpeg or .png.");
 
     public static readonly Error AttachmentInvalidSignature =
-        Error.Validation("Attachment.InvalidSignature", "File content does not match an image format.");
+        Error.Validation("Attachment.InvalidSignature", "File content does not match an image format.");//
 
 }
