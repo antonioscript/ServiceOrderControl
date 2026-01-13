@@ -1,39 +1,12 @@
-﻿using AutoMapper;
-using MediatR;
-using OsService.Application.V1.Abstractions.Persistence;
-using OsService.Application.V1.UseCases.Customers.GetCustomerById;
+﻿using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.Entities;
 using OsService.Domain.ResultPattern;
 
 namespace OsService.Application.V1.UseCases.Customers.GetCustomerByContact;
 
-//TODO: Transformar em UseCase
-public sealed class GetCustomerByContactHandler(
-    ICustomerRepository repo,
-    IMapper mapper
-)
-    : IRequestHandler<GetCustomerByContactQuery, Result<GetCustomerByContactResponse>>
+public partial class GetCustomerByContact
 {
-    public async Task<Result<GetCustomerByContactResponse>> Handle(
-        GetCustomerByContactQuery request,
-        CancellationToken ct)
-    {
-        var normalized = Normalize(request);
-
-        var validation = ValidatePrimitiveRules(normalized);
-        if (validation.IsFailure)
-            return Result.Failure<GetCustomerByContactResponse>(validation.Error);
-
-        var entity = await FindByContactAsync(normalized, repo, ct);
-
-        if (entity is null)
-            return Result.Failure<GetCustomerByContactResponse>(CustomerErrors.NotFound);
-
-        var response = mapper.Map<GetCustomerByContactResponse>(entity);
-        return Result.Success(response);
-    }
-
-    private static GetCustomerByContactQuery Normalize(GetCustomerByContactQuery request)
+    public static Query Normalize(Query request)
     {
         return request with
         {
@@ -46,7 +19,7 @@ public sealed class GetCustomerByContactHandler(
         };
     }
 
-    private static Result ValidatePrimitiveRules(GetCustomerByContactQuery request)
+    public static Result ValidatePrimitiveRules(Query request)
     {
         if (request.Phone is null && request.Document is null)
             return Result.Failure(CustomerErrors.SearchCriteriaRequired);
@@ -60,8 +33,8 @@ public sealed class GetCustomerByContactHandler(
         return Result.Success();
     }
 
-    private static async Task<CustomerEntity?> FindByContactAsync(
-        GetCustomerByContactQuery request,
+    public static async Task<CustomerEntity?> FindByContactAsync(
+        Query request,
         ICustomerRepository repo,
         CancellationToken ct)
     {

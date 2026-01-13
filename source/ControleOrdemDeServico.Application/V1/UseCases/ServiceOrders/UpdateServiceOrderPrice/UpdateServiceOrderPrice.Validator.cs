@@ -6,7 +6,6 @@ public partial class UpdateServiceOrderPrice
 {
     private static UpdateServiceOrderPriceCommand Normalize(UpdateServiceOrderPriceCommand request)
     {
-        // Se não tem preço -> não faz sentido moeda
         if (request.Price is null)
             return request with { Coin = null };
 
@@ -20,7 +19,7 @@ public partial class UpdateServiceOrderPrice
     private static Result ValidatePrimitiveRules(UpdateServiceOrderPriceCommand request)
     {
         if (request.Id == Guid.Empty)
-            return Result.Failure(ServiceOrderErrors.IdRequired); // se não tiver esse erro, pode trocar por um genérico
+            return Result.Failure(ServiceOrderErrors.IdRequired); 
 
         if (request.Price is < 0)
             return Result.Failure(ServiceOrderErrors.PriceNegative);

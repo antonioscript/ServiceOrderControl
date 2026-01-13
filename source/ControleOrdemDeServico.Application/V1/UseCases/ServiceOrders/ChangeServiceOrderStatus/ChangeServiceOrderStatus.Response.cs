@@ -7,7 +7,7 @@ public partial class ChangeServiceOrderStatus
     public sealed record Response(
         Guid Id,
         int Number,
-        ServiceOrderStatus Status,
+        string Status,
         DateTime OpenedAt,
         DateTime? StartedAt,
         DateTime? FinishedAt,

@@ -3,11 +3,9 @@ using OsService.Domain.Enums;
 
 namespace OsService.Domain.Entities;
 
-//TODO: Verificar como deve ser o preenchimeno automático, via Handler ou aqui dentro
-//Tô começando a pensar em deixar dentro do Handler por falar de regra de negócio...
 public sealed class ServiceOrderEntity : BaseEntity
 {
-    public int Number { get; init; } //Gerado automaticamente
+    public int Number { get; init; } 
     public Guid CustomerId { get; init; }
     public string Description { get; init; } = default!;
     public ServiceOrderStatus Status { get; set; } = ServiceOrderStatus.Open;
@@ -17,7 +15,7 @@ public sealed class ServiceOrderEntity : BaseEntity
     public DateTime? FinishedAt { get; set; }
 
     public decimal? Price { get; set; }
-    public string? Coin { get; set; } = "BRL"; //TODO: Acredito que as validações que usam isso estão incorretas
+    public string? Coin { get; set; } = "BRL"; 
     public DateTime? UpdatedPriceAt { get; set; }
 
 }

@@ -1,14 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Infrastructure.Databases;
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace OsService.Infrastructure.Repository;
-
-//TODO: Colocar no Readme a explicação das Classes Virtuais
 
 public class EfRepository<TEntity> : IRepository<TEntity>
     where TEntity : class

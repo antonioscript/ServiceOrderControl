@@ -15,17 +15,14 @@ public sealed class InfrastructureModule : IModule
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("DefaultConnection string not configured");
 
-        // DbContext
         services.AddDbContext<OsServiceDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        // Repositórios
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Database generator
         services.AddScoped<DatabaseGenerantor>();
     }
 }

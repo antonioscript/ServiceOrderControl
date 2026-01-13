@@ -9,14 +9,14 @@ namespace OsService.Application.V1.UseCases.Customers.CreateCustomer;
 
 public partial class CreateCustomer
 {
-	public sealed class CreateCustomerHandler(
+	public sealed class Handler(
 		ICustomerRepository repo,
 		IUnitOfWork unitOfWork,
 		IMapper mapper,
-        ILogger<CreateCustomerHandler> logger)
+        ILogger<Handler> logger)
 		: IRequestHandler<CreateCustomerCommand, Result<Guid>>
 	{
-		public async Task<Result<Guid>> Handle(CreateCustomerCommand request, CancellationToken ct)
+		public async Task<Result<Guid>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
 		{
             logger.LogInformation(
                 "Iniciando criação de cliente. Name={Name}, Phone={Phone}, Email={Email}, Document={Document}",
@@ -36,7 +36,7 @@ public partial class CreateCustomer
             }
 				
 
-			var duplicationValidation = await ValidateDuplicatesAsync(normalized, repo, ct);
+			var duplicationValidation = await ValidateDuplicatesAsync(normalized, repo, cancellationToken);
 			if (duplicationValidation.IsFailure)
 			{
                 logger.LogWarning(
@@ -50,8 +50,8 @@ public partial class CreateCustomer
 
 			var customer = mapper.Map<CustomerEntity>(normalized);
 
-			await repo.AddAsync(customer, ct);
-			await unitOfWork.CommitAsync(ct);
+			await repo.AddAsync(customer, cancellationToken);
+			await unitOfWork.CommitAsync(cancellationToken);
 
             logger.LogInformation(
                 "Cliente criado com sucesso. CustomerId={CustomerId}",

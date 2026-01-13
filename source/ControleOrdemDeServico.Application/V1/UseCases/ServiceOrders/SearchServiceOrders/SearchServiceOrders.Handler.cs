@@ -14,19 +14,21 @@ public partial class SearchServiceOrders
     {
         public async Task<Result<IReadOnlyList<Response>>> Handle(
             Query request,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
             var validation = ValidatePrimitiveRules(request);
             if (validation.IsFailure)
                 return Result.Failure<IReadOnlyList<Response>>(validation.Error);
 
-            // Filtro combinado: cliente / status / período
+            DateTime? start = request.StartDate?.Date;                 
+            DateTime? endExclusive = request.EndDate?.Date.AddDays(1);
+
             var list = await serviceOrders.ListAsync(so =>
                     (!request.CustomerId.HasValue || so.CustomerId == request.CustomerId.Value) &&
                     (!request.Status.HasValue || so.Status == request.Status.Value) &&
-                    (!request.StartDate.HasValue || so.OpenedAt >= request.StartDate.Value) &&
-                    (!request.EndDate.HasValue || so.OpenedAt <= request.EndDate.Value),
-                ct);
+                    (!start.HasValue || so.OpenedAt >= start.Value) &&
+                    (!endExclusive.HasValue || so.OpenedAt < endExclusive.Value),
+                cancellationToken);
 
             var response = mapper.Map<IReadOnlyList<Response>>(list);
             return Result.Success(response);

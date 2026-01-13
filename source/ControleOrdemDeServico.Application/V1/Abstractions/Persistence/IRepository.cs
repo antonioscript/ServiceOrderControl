@@ -2,7 +2,6 @@
 
 namespace OsService.Application.V1.Abstractions.Persistence;
 
-//TODO: Verificar se esse é o melhor local para colocar essa interface
 public interface IRepository<TEntity> where TEntity : class
 {
     Task<TEntity?> GetByIdAsync(Guid id, CancellationToken ct);

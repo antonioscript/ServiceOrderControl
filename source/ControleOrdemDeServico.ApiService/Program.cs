@@ -1,8 +1,7 @@
-
 using OsService.ApiService.Extensions;
-using OsService.Application; 
-using OsService.Infrastructure;                      
-using OsService.ServiceDefaults.DependencyInjection; 
+using OsService.Application;
+using OsService.Infrastructure;
+using OsService.ServiceDefaults.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,7 +41,9 @@ if (app.Environment.IsDevelopment())
 
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "OpenAPI V1");
+        options.SwaggerEndpoint("/openapi/v1.json", "ServiceOrderControl API v1");
+        options.DocumentTitle = "ServiceOrderControl - API de Ordens de Serviço";
+
     });
 }
 
@@ -51,4 +52,4 @@ app.MapDefaultEndpoints();
 app.MapControllers();
 
 
-app.Run();
+await app.RunAsync();

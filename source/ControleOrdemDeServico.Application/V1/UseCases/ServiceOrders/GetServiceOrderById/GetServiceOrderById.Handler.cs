@@ -3,9 +3,6 @@ using MediatR;
 using OsService.Application.V1.Abstractions.Persistence;
 using OsService.Domain.Entities;
 using OsService.Domain.ResultPattern;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OsService.Application.V1.UseCases.ServiceOrders.GetServiceOrderById;
 
@@ -18,12 +15,12 @@ public partial class GetServiceOrderById
     {
         public async Task<Result<Response>> Handle(
             Query request,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
             if (request.Id == Guid.Empty)
                 return Result.Failure<Response>(ServiceOrderErrors.IdRequired);
 
-            ServiceOrderEntity? entity = await serviceOrders.GetByIdAsync(request.Id, ct);
+            ServiceOrderEntity? entity = await serviceOrders.GetByIdAsync(request.Id, cancellationToken);
 
             if (entity is null)
                 return Result.Failure<Response>(ServiceOrderErrors.NotFound);

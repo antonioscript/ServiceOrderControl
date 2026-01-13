@@ -15,13 +15,13 @@ public partial class GetServiceOrderAttachments
     {
         public async Task<Result<IReadOnlyList<Response>>> Handle(
             Query request,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
-            var exists = await serviceOrders.ExistsAsync(request.ServiceOrderId, ct);
+            var exists = await serviceOrders.ExistsAsync(request.ServiceOrderId, cancellationToken);
             if (!exists)
                 return Result.Failure<IReadOnlyList<Response>>(ServiceOrderErrors.NotFound);
 
-            var list = await attachments.ListByServiceOrderIdAsync(request.ServiceOrderId, ct);
+            var list = await attachments.ListByServiceOrderIdAsync(request.ServiceOrderId, cancellationToken);
             var response = mapper.Map<IReadOnlyList<Response>>(list);
             return Result.Success(response);
         }

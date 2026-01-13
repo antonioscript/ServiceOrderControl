@@ -18,7 +18,7 @@ public partial class ChangeServiceOrderStatus
     {
         public async Task<Result<Response>> Handle(
             ChangeServiceOrderCommand request,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
             logger.LogInformation(
                 "Iniciando mudança de status da OS. ServiceOrderId={ServiceOrderId}, NewStatus={NewStatus}",
@@ -38,7 +38,7 @@ public partial class ChangeServiceOrderStatus
             }
                 
 
-            var entity = await serviceOrders.GetByIdAsync(request.Id, ct);
+            var entity = await serviceOrders.GetByIdAsync(request.Id, cancellationToken);
             if (entity is null)
             {
                 logger.LogWarning(
@@ -81,7 +81,7 @@ public partial class ChangeServiceOrderStatus
 
             entity.Status = request.NewStatus;
 
-            await unitOfWork.CommitAsync(ct);
+            await unitOfWork.CommitAsync(cancellationToken);
 
             logger.LogInformation(
                 "Status da OS atualizado com sucesso. ServiceOrderId={ServiceOrderId}, NewStatus={NewStatus}",
