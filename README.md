@@ -494,7 +494,7 @@ public sealed record Error(string Code, string Message, HttpStatusCode StatusCod
 
 
 
-A lógica de tradução de resultado de domínio → resposta HTTP fica concentrada em um único lugar. Onde as respostas ficam nesse formato: 
+A lógica de tradução de resultado de domínio → resposta HTTP fica concentrada em um único lugar. Isso deixa os controllers mais enxutos, evita duplicação de lógica de status code e garante um contrato de resposta consistente em toda a API. Onde as respostas ficam nesse formato: 
 
 ```json
 
@@ -513,6 +513,51 @@ A lógica de tradução de resultado de domínio → resposta HTTP fica concentr
 }
 
 ```
+
+## GlobalExceptionHandler
+
+Para tratar exceções não previstas de forma centralizada, a API registra um `GlobalExceptionHandler`. 
+
+Exceções inesperadas (null reference, falha de IO, etc.) caem no GlobalExceptionHandler, que rgistra o erro em log e retorna uma resposta no formato ProblemDetails, com status apropriado( 500). Em vez de cada controller tentar tratar qualque exceção, existe um lugar específico responsável por isso. Isso reduz duplicação e risco de tratamento inconsistente.
+
+## Padrão Unit of Work
+
+Para coordenar o commit das alterações no banco de forma consistente, a camada de infraestrutura expõe uma implementação de **Unit of Work** baseada no Context. 
+
+```csharp
+await unitOfWork.CommitAsync(cancellationToken);
+
+```
+
+
+A ideia é simple, os Handlers da camada de Application trabalham com repositórios e ao final do caso de uso, chamam CommitAsync em IUnitOfWork.
+
+Isso permite que várias operações de escrita (commands), sejam consolidadas em um único SaveChangesAsync, mantendo a transação coerente. A camada Application não conhece diretamente o DbContext nem a forma como o commit é feito, ela depende apenas da abstração IUnitOfWork, o que facilita testes e troca de implementação no futuro, se necessário.
+
+
+
+
+## Padrão Repository
+
+
+
+Para encapsular o acesso ao banco de dados e evitar que a camada de domínio/aplicação precise falar diretamente com EF Core, foi implementado um repositório genérico ``IRepository<TEntity>```
+
+
+Ela abstrai operações básicas (GetByIdAsync, AddAsync, UpdateAsync, RemoveAsync, ListAsync) para qualquer entidade (TEntity).
+
+Os métodos são virtuais, permitindo que repositórios específicos (como CustomerRepository, ServiceOrderRepository) sobrescrevam comportamento quando precisarem de queries mais ricas.
+
+E é utilizado o **AsNoTracking** nas consultas de leitura, para melhorar performance em cenários onde não é necessário rastreamento de mudanças.
+
+
+
+
+
+
+
+
+
 
 
 
