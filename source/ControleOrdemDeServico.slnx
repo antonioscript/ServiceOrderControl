@@ -1,13 +1,6 @@
 <Solution>
-  <Folder Name="/infra/" />
-  <Folder Name="/infra/docker/">
-    <Project Path="Infra/docker-compose.dcproj" Id="1badd0ce-30a4-416b-a7bd-c3fe2a48aab0">
-      <Build />
-    </Project>
-  </Folder>
   <Folder Name="/src/">
     <File Path="README.md" />
-    <Project Path="ControleOrdemDeServico.AppHost/OsService.AppHost.csproj" />
     <Project Path="ControleOrdemDeServico.ServiceDefaults/OsService.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/src/Apis/">
@@ -22,10 +15,5 @@
   <Folder Name="/src/Infrastructure/">
     <Project Path="ControleOrdemDeServico.Infrastructure/OsService.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/src/Test/">
-    <Project Path="ControleOrdemDeServico.Tests/OsService.Tests.csproj" />
-  </Folder>
-  <Folder Name="/src/Views/">
-    <Project Path="ControleOrdemDeServico.Web/OsService.Web.csproj" />
-  </Folder>
+  <Folder Name="/src/Test/" />
 </Solution>
